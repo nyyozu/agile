@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disciplinas - Portal da Faculdade</title>
+    <style>
+        body {
+            background-image: url("fundo.gif");
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        h1 {
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 2em;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 800px;
+            width: 100%;
+        }
+        .discipline-card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: #5bc0de;
+        }
+        .logout-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 1em;
+        }
+        .logout-button:hover {
+            background-color: #c9302c;
+        }
+        
+        .text1 {
+            font-size: 40px;
+            color: #ffffff;
+         }
+
+         .back-button {
+            position: absolute; 
+            top: 20px;
+            left: 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: #5bc0de;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="location.href='sistema.html'" style="background: none; border: none; cursor: pointer; font-size: 24px; color: #ffffff;">
+        &#8592;
+    </button>
+
+    <h1 class="text1">Disciplinas</h1>
+    <div class="container">
+        <div class="discipline-card">
+            <h2>Lógica Matemática</h2>
+            <p>Professor: Frank Molitor</p>
+        </div>
+        <div class="discipline-card">
+            <h2>Lógica Computacional</h2>
+            <p>Professor: Osvaldo Silva</p>
+        </div>
+        <div class="discipline-card">
+            <h2>Database Modeling & SQL</h2>
+            <p>Professor: Matheus Melo</p>
+        </div>
+        <div class="discipline-card">
+            <h2>Gestão da Diversidade</h2>
+            <p>Professor: Alcineide Pereira</p>
+        </div>
+        <div class="discipline-card">
+            <h2>Sustentabilidade nas Organizações</h2>
+            <p>Professor: Mariana Igesca</p>
+        </div>
+        <div class="discipline-card">
+            <h2>Agile Methods</h2>
+            <p>Professor: Ligia Zago</p>
+        </div>
+    </div>
+    <button class="logout-button" onclick="location.href='login.html'">Sair</button>
+</body>
+<script>
+    function verificarAutenticacao() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert("Você precisa estar logado para acessar esta página.");
+                window.location.href = 'login.html';
+            }
+        }
+
+        verificarAutenticacao();
+</script>
+</html>

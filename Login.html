@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tela de Login</title>
+    <style>
+        body {
+            background-image: url("fundo.gif");
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        .login-container {
+            display: flex;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .form {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .form input {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form button {
+            padding: 10px;
+            background-color: #5cb85c;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .form button:hover {
+            background-color: #4cae4c;
+        }
+        .gif-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .gif-container img {
+            max-width: 200px;
+        }
+        .login-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="form">
+            <h3>Educationtech</h3>
+            <input type="email" id="email" placeholder="E-mail" required>
+            <input type="password" id="senha" placeholder="Senha" required>
+            <button onclick="login()">Entrar</button>
+            <p onclick="location.href='registro.html'">Registrar-se</p>
+        </div>
+        <div class="gif-container">
+            <img src="gato.gif" alt="GIF de gato">
+        </div>
+    </div>
+
+    <script>
+        async function login() {
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+            const response = await fetch('http://localhost:5000/login', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, senha })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+        alert(data.message);
+        localStorage.setItem('token', data.token);
+        window.location.href = 'sistema.html';
+    } else {
+        alert(data.message);
+    }
+}
+    </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal do Aluno</title>
+    <style>
+        body {
+            background-image: url("fundo.gif");
+            font-family: Arial, sans-serif;
+            background-color: #eaeaea;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            position: relative;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 2em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            max-width: 900px;
+            width: 100%;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 35px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            flex: 1 1 220px;
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(100, 149, 237, 0.1); 
+            border-radius: 10px;
+            transition: opacity 0.2s;
+            opacity: 0;
+        }
+        .card:hover::before {
+            opacity: 1;
+        }
+        .card h2 {
+            margin: 0;
+            color: #444;
+            font-size: 1.5em;
+            position: relative;
+            z-index: 1;
+        }
+        .logout-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 1em;
+        }
+        .logout-button:hover {
+            background-color: #c9302c;
+        }
+        .text1 {
+            font-size: 45px;
+            color: #ffffff;
+         }
+    </style>
+</head>
+<body>
+    <h1 class="text1">Painel do Aluno</h1>
+    <div class="container">
+        <div class="card" onclick="location.href='notas.html'">
+            <h2>Notas</h2>
+        </div>
+        <div class="card" onclick="location.href='certificacoes.html'">
+            <h2>Certificações Acadêmicas</h2>
+        </div>
+        <div class="card" onclick="location.href='disciplinas.html'">
+            <h2>Disciplinas</h2>
+        </div>
+        <div class="card" onclick="location.href='calendario.html'">
+            <h2>Calendário Acadêmico</h2>
+        </div>
+        <div class="card" onclick="location.href='suporte.html'">
+            <h2>Suporte</h2>
+        </div>
+        <div class="card" onclick="location.href='faltas.html'">
+            <h2>Acompanhamento de Faltas</h2>
+        </div>
+    </div>
+    <button class="logout-button" onclick="location.href='login.html'">Sair</button>
+</body>
+
+<script>
+    function verificarAutenticacao() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert("Você precisa estar logado para acessar esta página.");
+                window.location.href = 'login.html';
+            }
+        }
+
+        verificarAutenticacao();
+</script>
+</html>
