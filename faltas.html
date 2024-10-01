@@ -145,22 +145,31 @@
         }
 
         function exibirFaltas(faltas) {
-            const disciplinas = {
-                'Lógica Matemática': 'mathAbsences',
-                'Lógica Computacional': 'logicCompAbsences',
-                'Database Modeling & SQL': 'dbAbsences',
-                'Agile Methods': 'agileAbsences'
-            };
+    // Inicializa um objeto para armazenar as faltas por disciplina
+    const faltasPorDisciplina = {
+        'Lógica Matemática': 0,
+        'Lógica Computacional': 0,
+        'Database Modeling & SQL': 0,
+        'Agile Methods': 0
+    };
 
-            faltas.forEach(falta => {
-                const disciplina = falta.disciplina;
-                const totalFaltas = falta.total_faltas;
+    // Preenche o objeto com os dados recebidos
+    faltas.forEach(falta => {
+        const disciplina = falta.disciplina;
+        const totalFaltas = falta.total_faltas;
 
-                if (disciplinas[disciplina]) {
-                    document.getElementById(disciplinas[disciplina]).innerText = totalFaltas;
-                }
-            });
+        // Verifica se a disciplina está no objeto e atualiza o número de faltas
+        if (faltasPorDisciplina[disciplina] !== undefined) {
+            faltasPorDisciplina[disciplina] = totalFaltas;
         }
+    });
+
+    // Atualiza a exibição no HTML
+    document.getElementById("mathAbsences").innerText = faltasPorDisciplina['Lógica Matemática'];
+    document.getElementById("logicCompAbsences").innerText = faltasPorDisciplina['Lógica Computacional'];
+    document.getElementById("dbAbsences").innerText = faltasPorDisciplina['Database Modeling & SQL'];
+    document.getElementById("agileAbsences").innerText = faltasPorDisciplina['Agile Methods'];
+    }
 
         // Inicializa a página
         window.onload = () => {
