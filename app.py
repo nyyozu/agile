@@ -155,5 +155,26 @@ def get_faltas(aluno_id):
     faltas_json = [{'disciplina': falta[0], 'total_faltas': falta[1]} for falta in faltas]
     return jsonify(faltas_json), 200
 
+@app.route('/lançarfaltas', methods=['POST'])
+def registrar_faltas():
+    data = request.get_json()
+    
+    aluno_id = data.get('aluno_id')
+    disciplina = data.get('disciplina')
+    dias = data.get('dias')  # Espera uma data no formato 'YYYY-MM-DD'
+    
+    if not aluno_id or not disciplina or not dias:
+        return jsonify({'error': 'Dados incompletos.'}), 400
+
+    cur = mysql.connection.cursor()
+    try:
+        cur.execute('INSERT INTO faltas (aluno_id, disciplina, dias) VALUES (%s, %s, %s)', (aluno_id, disciplina, dias))
+        mysql.connection.commit()
+        return jsonify({'message': 'Falta registrada com sucesso.'}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cur.close()
+
 if __name__ == '__main__':
     app.run(debug=True)

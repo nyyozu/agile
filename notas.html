@@ -91,12 +91,11 @@
     </style>
 </head>
 <body>
-    <button class="back-button" onclick="location.href='sistema.html'">
-        &#8592;
-    </button>
+        
     <h1 class="text1">Notas - Portal do Aluno</h1>
     <div class="container" id="gradesContainer"></div>
-    <button class="logout-button" onclick="location.href='login.html'">Sair</button>
+    <button class="logout-button" onclick="logout()">Sair</button>
+
 
     <script>
         async function carregarNotas() {
@@ -162,6 +161,11 @@
     });
 }
 
+        function logout() {
+        localStorage.removeItem('token'); // Remove o token do localStorage
+        localStorage.removeItem('alunoId'); // (Opcional) Remova o alunoId, se necessário
+        window.location.href = 'login.html'; // Redireciona para a página de login
+        }
         window.onload = () => {
             carregarNotas();
         };

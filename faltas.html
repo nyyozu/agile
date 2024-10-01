@@ -109,8 +109,7 @@
             <p>Faltas: <span id="agileAbsences"></span></p>
         </div>
     </div>
-    <button class="logout-button" onclick="location.href='login.html'">Sair</button>
-
+    <button class="logout-button" onclick="logout()">Sair</button>
     <script>
         function verificarAutenticacao() {
             const token = localStorage.getItem('token');
@@ -170,6 +169,12 @@
     document.getElementById("dbAbsences").innerText = faltasPorDisciplina['Database Modeling & SQL'];
     document.getElementById("agileAbsences").innerText = faltasPorDisciplina['Agile Methods'];
     }
+
+    function logout() {
+        localStorage.removeItem('token'); // Remove o token do localStorage
+        localStorage.removeItem('alunoId'); // (Opcional) Remova o alunoId, se necessário
+        window.location.href = 'login.html'; // Redireciona para a página de login
+        }
 
         // Inicializa a página
         window.onload = () => {

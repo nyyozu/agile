@@ -194,9 +194,7 @@
             <p>Seu chamado foi enviado com sucesso.</p>
         </div>
     </div>
-
-    <button class="logout-button" onclick="location.href='login.html'">Sair</button>
-
+    <button class="logout-button" onclick="logout()">Sair</button>
     <script>
         document.getElementById('supportForm').addEventListener('submit', function(event) {
             event.preventDefault();
@@ -224,6 +222,12 @@
                 alert("Você precisa estar logado para acessar esta página.");
                 window.location.href = 'login.html';
             }
+        }
+
+        function logout() {
+        localStorage.removeItem('token'); // Remove o token do localStorage
+        localStorage.removeItem('alunoId'); // (Opcional) Remova o alunoId, se necessário
+        window.location.href = 'login.html'; // Redireciona para a página de login
         }
         verificarAutenticacao(); // Verifica se o usuário está logado
     </script>

@@ -118,9 +118,7 @@
             <p class="phone">Telefone: (61) 95432-1098</p>
         </div>
     </div>
-
-    <button class="logout-button" onclick="location.href='login.html'">Sair</button>
-
+    <button class="logout-button" onclick="logout()">Sair</button>
     <script>
         function verificarAutenticacao() {
             const token = localStorage.getItem('token');
@@ -130,6 +128,11 @@
             }
         }
 
+        function logout() {
+        localStorage.removeItem('token'); // Remove o token do localStorage
+        localStorage.removeItem('alunoId'); // (Opcional) Remova o alunoId, se necessário
+        window.location.href = 'login.html'; // Redireciona para a página de login
+        }
         verificarAutenticacao();
     </script>
 </body>

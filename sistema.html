@@ -107,7 +107,6 @@
             }
         }
     </style>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <h1>Painel do Aluno</h1>
@@ -143,8 +142,7 @@
             <p class="card-description">Monitore suas presenças e ausências.</p>
         </div>
     </div>
-    <button class="logout-button" onclick="location.href='login.html'">Sair</button>
-
+    <button class="logout-button" onclick="logout()">Sair</button>
     <script>
         function verificarAutenticacao() {
             const token = localStorage.getItem('token');
@@ -154,6 +152,11 @@
             }
         }
 
+            function logout() {
+        localStorage.removeItem('token'); // Remove o token do localStorage
+        localStorage.removeItem('alunoId'); // (Opcional) Remova o alunoId, se necessário
+        window.location.href = 'login.html'; // Redireciona para a página de login
+        }
         verificarAutenticacao();
     </script>
 </body>
