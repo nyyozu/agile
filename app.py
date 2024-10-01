@@ -111,7 +111,7 @@ def logout():
     return jsonify({"message": "Token não encontrado."}), 400
 
 
-@app.route('/lançar-nota', methods=['POST'])
+@app.route('/lancarnota', methods=['POST'])
 def lancar_nota():
     data = request.get_json()
     aluno_id = data['aluno_id']
@@ -155,10 +155,9 @@ def get_faltas(aluno_id):
     faltas_json = [{'disciplina': falta[0], 'total_faltas': falta[1]} for falta in faltas]
     return jsonify(faltas_json), 200
 
-@app.route('/lançarfaltas', methods=['POST'])
+@app.route('/lancarfaltas', methods=['POST'])
 def registrar_faltas():
     data = request.get_json()
-    
     aluno_id = data.get('aluno_id')
     disciplina = data.get('disciplina')
     dias = data.get('dias')  # Espera uma data no formato 'YYYY-MM-DD'
@@ -175,6 +174,38 @@ def registrar_faltas():
         return jsonify({'error': str(e)}), 500
     finally:
         cur.close()
+
+@app.route('/lancarcertificado', methods=['POST'])
+def lancar_certificado():
+    data = request.get_json()
+    aluno_id = data.get('aluno_id')
+    tipo_certificado = data.get('tipo_certificado')
+    descricao = data.get('descricao')
+    ano = data.get('ano')
+    instituicao = data.get('instituicao')
+
+    if not aluno_id or not tipo_certificado or not descricao or not ano or not instituicao:
+        return jsonify({"message": "Dados incompletos"}), 400
+
+    cur = mysql.connection.cursor()
+    cur.execute('''
+        INSERT INTO certificados (aluno_id, tipo_certificado, descricao, ano, instituicao)
+        VALUES (%s, %s, %s, %s, %s)
+    ''', (aluno_id, tipo_certificado, descricao, ano, instituicao))
+    
+    mysql.connection.commit()
+    cur.close()
+
+    return jsonify({"message": "Certificado lançado com sucesso!"}), 201
+
+@app.route('/certificado/<int:aluno_id>', methods=['GET'])
+def obter_certificados(aluno_id):
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM certificados WHERE aluno_id = %s', (aluno_id,))
+    certificados = cur.fetchall()
+    cur.close()
+    
+    return jsonify(certificados)
 
 if __name__ == '__main__':
     app.run(debug=True)

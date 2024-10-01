@@ -84,46 +84,35 @@
         .logout-button:hover {
             background-color: #c9302c;
         }
+
+        .certification-card {
+        position: relative; /* Para permitir que o botão seja posicionado corretamente */
+        }
+
+        /* Personalizar o ícone do botão */
+        .download-button {
+            font-size: 1.5em; /* Tamanho do ícone */
+            transition: color 0.3s; /* Efeito de transição */
+            margin-top: 35px
+        }
+
+        .download-button:hover {
+            color: #2980b9; /* Mudança de cor ao passar o mouse */
+        }
     </style>
 </head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <body>
     <button class="back-button" onclick="location.href='sistema.html'">
         &#8592;
     </button>
     <h1>Certificações Acadêmicas</h1>
-    <div class="container">
-        <div class="certification-card">
-            <h2>Certificado de Conclusão de Curso</h2>
-            <p>Curso: Bacharel em Administração</p>
-            <p>Ano: 2023</p>
-            <p>Instituição: Universidade XYZ</p>
-        </div>
-        <div class="certification-card">
-            <h2>Certificado de Participação em Eventos</h2>
-            <p>Evento: Congresso Nacional de Administração</p>
-            <p>Ano: 2022</p>
-            <p>Instituição: Universidade XYZ</p>
-        </div>
-        <div class="certification-card">
-            <h2>Certificado de Língua Estrangeira</h2>
-            <p>Idioma: Inglês</p>
-            <p>Nível: Avançado</p>
-            <p>Instituição: Centro de Idiomas ABC</p>
-        </div>
-        <div class="certification-card">
-            <h2>Certificado de Formação em Gestão de Projetos</h2>
-            <p>Curso: Gestão de Projetos</p>
-            <p>Ano: 2023</p>
-            <p>Instituição: Universidade XYZ</p>
-        </div>
-        <div class="certification-card">
-            <h2>Certificado de Estágio Supervisionado</h2>
-            <p>Empresa: Empresa Exemplar</p>
-            <p>Período: 2022</p>
-            <p>Supervisor: Dr. João Silva</p>
-        </div>
+    <div class="container" id="certificationsContainer">
+        <!-- Os certificados serão adicionados aqui dinamicamente -->
     </div>
     <button class="logout-button" onclick="logout()">Sair</button>
+
     <script>
         function verificarAutenticacao() {
             const token = localStorage.getItem('token');
@@ -132,12 +121,85 @@
                 window.location.href = 'login.html';
             }
         }
+
         function logout() {
-        localStorage.removeItem('token'); // Remove o token do localStorage
-        localStorage.removeItem('alunoId'); // (Opcional) Remova o alunoId, se necessário
-        window.location.href = 'login.html'; // Redireciona para a página de login
+            localStorage.removeItem('token'); 
+            localStorage.removeItem('alunoId');
+            window.location.href = 'login.html';
         }
-        verificarAutenticacao();
+
+        async function carregarCertificados() {
+    const alunoId = localStorage.getItem('alunoId');
+    const container = document.getElementById('certificationsContainer');
+
+    try {
+        const response = await fetch(`http://localhost:5000/certificado/${alunoId}`, {
+            method: 'GET'
+        });
+
+        if (!response.ok) {
+            throw new Error("Nenhum certificado encontrado");
+        }
+
+        const certificados = await response.json();
+
+        if (certificados.length === 0) {
+            return; // Não mostra nada se não houver certificados
+        }
+
+        certificados.forEach(certificado => {
+            const card = document.createElement('div');
+            card.classList.add('certification-card');
+
+            // Exibir os dados do certificado na tela
+            card.innerHTML = `
+                <h2>${certificado[2]}</h2>
+                <p>Descrição: ${certificado[3]}</p>
+                <p>Ano: ${certificado[4]}</p>
+                <p>Instituição: ${certificado[5]}</p>
+                <button class="download-button" onclick="gerarPDF(${certificado[0]}, '${certificado[2]}', '${certificado[3]}', ${certificado[4]}, '${certificado[5]}')">
+                    <i class="fas fa-download"></i>
+                </button>
+            `;
+
+            // Estilizar o botão para estar no canto direito
+            const button = card.querySelector('.download-button');
+            button.style.position = 'absolute';
+            button.style.right = '20px'; // Alinha ao lado direito
+            button.style.top = '20px'; // Alinha ao topo do card
+            button.style.background = 'none'; // Remove fundo do botão
+            button.style.border = 'none'; // Remove borda do botão
+            button.style.cursor = 'pointer';
+            button.style.color = '#3498db'; // Cor do ícone
+
+            container.appendChild(card);
+        });
+    } catch (error) {
+        console.error('Erro ao carregar certificados:', error);
+    }
+}
+    async function gerarPDF(id, tipo, descricao, ano, instituicao) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // Adicionar conteúdo ao PDF
+        doc.setFont("Helvetica", "normal");
+        doc.setFontSize(16);
+        doc.text("Certificado de Conclusão", 105, 30, { align: "center" });
+        doc.setFontSize(12);
+        doc.text(`Tipo de Certificado: ${tipo}`, 20, 60);
+        doc.text(`Descrição: ${descricao}`, 20, 70);
+        doc.text(`Ano: ${ano}`, 20, 80);
+        doc.text(`Instituição: ${instituicao}`, 20, 90);
+        doc.text("Assinatura do Coordenador", 20, 110);
+
+        // Salvar o PDF
+        doc.save(`certificado_${tipo.replace(/\s+/g, '_')}_${ano}.pdf`);
+    }
+
+verificarAutenticacao();
+carregarCertificados();
+
     </script>
 </body>
 </html>

@@ -22,3 +22,13 @@ CREATE TABLE usuarios (
     email VARCHAR(255) NOT NULL,
     senha int not null
 );
+
+CREATE TABLE certificados (
+    certificado_id INT AUTO_INCREMENT PRIMARY KEY,
+    aluno_id INT,
+    tipo_certificado VARCHAR(255),
+    descricao VARCHAR(255),
+    ano INT,
+    instituicao VARCHAR(255),
+    FOREIGN KEY (aluno_id) REFERENCES usuarios(id)
+);
