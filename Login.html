@@ -165,7 +165,12 @@ async function login() {
         alert(data.message);
         localStorage.setItem('token', data.token);
         localStorage.setItem('alunoId', data.alunoId); // Armazena o alunoId
-        window.location.href = 'sistema.html';
+        localStorage.setItem('tipo_usuario', data.tipo_usuario);
+        if(data.tipo_usuario === 'alunos'){   
+            window.location.href = 'sistema.html';
+        }else if(data.tipo_usuario === 'professores'){
+            windows.location.href = 'professor.html'
+        }
     } else {
         alert(data.message);
     }

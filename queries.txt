@@ -20,7 +20,8 @@ CREATE TABLE usuarios (
 	id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
-    senha int not null
+    senha int not null,
+    tipo_usuário enum(alunos, professores)
 );
 
 CREATE TABLE certificados (

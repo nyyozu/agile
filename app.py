@@ -70,7 +70,6 @@ def login():
     cur.execute('SELECT * FROM usuarios WHERE email = %s', (email,))
     usuario = cur.fetchone()
 
-    # Verifique se o usuário existe e se a senha está correta
     if usuario and bcrypt.checkpw(senha.encode('utf-8'), usuario[3].encode('utf-8')): 
         token = jwt.encode({
             'email': email,
@@ -81,7 +80,8 @@ def login():
         return jsonify({
             'message': f'Bem-vindo, {usuario[1]}!',
             'token': token,
-            'alunoId': usuario[0]  # Retorna o alunoId
+            'alunoId': usuario[0],
+            'tipo_usuario': usuario[4]  # Aqui, usuário[4] deve ser o tipo de usuário (aluno ou professor)
         }), 200
 
     return jsonify({'message': 'Email ou senha inválidos!'}), 401
