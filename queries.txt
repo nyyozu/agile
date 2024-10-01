@@ -1,0 +1,24 @@
+
+
+CREATE TABLE faltas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    aluno_id INT,
+    disciplina VARCHAR(100),
+    dia DATE,
+    FOREIGN KEY (aluno_id) REFERENCES usuarios(id)
+);
+
+CREATE TABLE notas (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    aluno_id INT,
+    disciplina VARCHAR(255),
+    nota DECIMAL(5,2),
+    FOREIGN KEY (aluno_id) references usuarios(id)
+    );
+
+CREATE TABLE usuarios (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    senha int not null
+);

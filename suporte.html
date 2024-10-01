@@ -7,84 +7,98 @@
     <style>
         body {
             background-image: url("fundo.gif");
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
             margin: 0;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            position: relative; 
+            position: relative;
+            min-height: 100vh;
         }
         h1 {
             margin-bottom: 30px;
-            color: #333;
-            font-size: 2em;
+            color: #ffffff;
+            font-size: 2.5em;
+            font-weight: 600;
         }
         .form-container {
             background-color: #ffffff;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             max-width: 600px;
             width: 100%;
+            text-align: left;
         }
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         label {
             display: block;
-            margin-bottom: 5px;
-            color: #444;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 1.1em;
+            font-weight: 500;
         }
         input, textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            padding: 12px 15px;
+            border: 1px solid #d1d1d1;
+            border-radius: 8px;
+            font-size: 1em;
+            color: #34495e;
+            background-color: #fafafa;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+        input:focus, textarea:focus {
+            border-color: #5bc0de;
+            background-color: #ffffff;
+            box-shadow: 0 0 6px rgba(91, 192, 222, 0.5);
+            outline: none;
         }
         textarea {
             resize: vertical;
-            height: 100px;
+            height: 120px;
         }
         .submit-button {
-            padding: 10px 20px;
+            padding: 12px 25px;
             background-color: #5bc0de;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.2s;
-            font-size: 1em;
+            font-size: 1.1em;
+            font-weight: 500;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
         }
         .submit-button:hover {
             background-color: #31b0d5;
+            transform: translateY(-2px);
         }
         .back-button {
             position: absolute;
             top: 20px;
-            left: 20px;
-            background: none;
+            padding: 10px 20px;
+            font-size: 1em;
             border: none;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 24px;
-            color: #5bc0de;
+            transition: background-color 0.3s;
+            color: white;
+            background-color: #3498db;
+        }
+        .back-button:hover, .logout-button:hover {
+            background-color: #2980b9;
+        }
+        .back-button {
+            left: 20px;
         }
         .logout-button {
-            position: absolute;
-            top: 20px;
             right: 20px;
-            padding: 10px 20px;
-            background-color: #d9534f;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            font-size: 1em;
-        }
-        .logout-button:hover {
-            background-color: #c9302c;
         }
         .modal {
             display: none;
@@ -94,42 +108,63 @@
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto; 
-            background-color: rgba(0, 0, 0, 0.4); 
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .logout-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 1em;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .logout-button:hover {
+            background-color: #c9302c;
         }
         .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
             max-width: 400px;
-            border-radius: 8px;
+            width: 100%;
             text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
         }
         .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
             color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
+            font-size: 24px;
             cursor: pointer;
         }
-        .text1 {
-            font-size: 40px;
-            color: #ffffff;
-         }
+        .close:hover {
+            color: #000;
+        }
+        h2 {
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            color: #34495e;
+        }
+        p {
+            font-size: 1.1em;
+            color: #7f8c8d;
+        }
     </style>
 </head>
 <body>
-    <button class="back-button" onclick="location.href='sistema.html'" style="background: none; border: none; cursor: pointer; font-size: 24px; color: #ffffff;">
-        &#8592;
-    </button>
-    <h1 class="text1">Suporte</h1>
+    <button class="back-button" onclick="location.href='sistema.html'">&#8592;</button>
+    <h1>Suporte</h1>
     <div class="form-container">
         <form id="supportForm">
             <div class="form-group">
@@ -162,24 +197,6 @@
 
     <button class="logout-button" onclick="location.href='login.html'">Sair</button>
 
-    <div class="contact-methods">
-        <h2>Formas de Contato</h2>
-        <ul style="list-style-type: none; padding: 0;">
-            <li>
-                <a href="https://api.whatsapp.com/send?phone=5511999999999" target="_blank" style="text-decoration: none; color: #25D366;">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style="width: 24px; vertical-align: middle;"> 
-                    WhatsApp
-                </a>
-            </li>
-            <li>
-                <a href="https://t.me/Educationtech" target="_blank" style="text-decoration: none; color: #0088CC;">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Telegram_2019_Logo.svg/2048px-Telegram_2019_Logo.svg.png" alt="Telegram" style="width: 24px; vertical-align: middle;"> 
-                    Telegram
-                </a>
-            </li>
-        </ul>
-    </div>
-
     <script>
         document.getElementById('supportForm').addEventListener('submit', function(event) {
             event.preventDefault();
@@ -187,7 +204,7 @@
         });
 
         function openModal() {
-            document.getElementById("myModal").style.display = "block";
+            document.getElementById("myModal").style.display = "flex";
         }
 
         function closeModal() {
@@ -200,6 +217,7 @@
                 closeModal();
             }
         }
+
         function verificarAutenticacao() {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -207,7 +225,7 @@
                 window.location.href = 'login.html';
             }
         }
-        verificarAutenticacao();
+        verificarAutenticacao(); // Verifica se o usuário está logado
     </script>
 </body>
 </html>

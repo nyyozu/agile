@@ -18,8 +18,9 @@
         }
         h1 {
             margin-bottom: 30px;
-            color: #333;
-            font-size: 2em;
+            color: #ffffff;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
         .container {
             display: flex;
@@ -30,32 +31,46 @@
         }
         .absence-card {
             background-color: #ffffff;
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .absence-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
         }
         .back-button {
             position: absolute;
             top: 20px;
-            left: 20px;
-            background: none;
+            padding: 10px 20px;
+            font-size: 1em;
             border: none;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 24px;
-            color: #5bc0de;
+            transition: background-color 0.3s;
+            color: white;
+            background-color: #3498db;
+        }
+        .back-button:hover, .logout-button:hover {
+            background-color: #2980b9;
+        }
+        .back-button {
+            left: 20px;
         }
         .logout-button {
             position: absolute;
             top: 20px;
             right: 20px;
             padding: 10px 20px;
-            background-color: #d9534f;
+            background-color: #e74c3c;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color 0.3s;
             font-size: 1em;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         .logout-button:hover {
             background-color: #c9302c;
@@ -63,11 +78,11 @@
         .text1 {
             font-size: 40px;
             color: #ffffff;
-         }
+        }
     </style>
 </head>
 <body>
-    <button class="back-button" onclick="location.href='sistema.html'" style="background: none; border: none; cursor: pointer; font-size: 24px; color: #ffffff;">
+    <button class="back-button" onclick="location.href='sistema.html'">
         &#8592;
     </button>
 
@@ -97,7 +112,6 @@
     <button class="logout-button" onclick="location.href='login.html'">Sair</button>
 
     <script>
-
         function verificarAutenticacao() {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -106,15 +120,53 @@
             }
         }
 
+        async function carregarFaltas() {
+            const alunoId = localStorage.getItem('alunoId');
+            if (!alunoId) {
+                console.error('ID do aluno não encontrado no localStorage.');
+                return;
+            }
 
-        verificarAutenticacao();
-        function getRandomInt(max) {
-            return Math.floor(Math.random() * max);
+            try {
+                const response = await fetch(`http://localhost:5000/faltas/${alunoId}`, {
+                    method: 'GET'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Falha ao buscar as faltas. Status: ' + response.status);
+                }
+
+                const faltas = await response.json();
+                exibirFaltas(faltas);
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao carregar as faltas. Veja o console para detalhes.');
+            }
         }
-        document.getElementById("mathAbsences").innerText = getRandomInt(10);
-        document.getElementById("logicCompAbsences").innerText = getRandomInt(10);
-        document.getElementById("dbAbsences").innerText = getRandomInt(10);
-        document.getElementById("agileAbsences").innerText = getRandomInt(10);
+
+        function exibirFaltas(faltas) {
+            const disciplinas = {
+                'Lógica Matemática': 'mathAbsences',
+                'Lógica Computacional': 'logicCompAbsences',
+                'Database Modeling & SQL': 'dbAbsences',
+                'Agile Methods': 'agileAbsences'
+            };
+
+            faltas.forEach(falta => {
+                const disciplina = falta.disciplina;
+                const totalFaltas = falta.total_faltas;
+
+                if (disciplinas[disciplina]) {
+                    document.getElementById(disciplinas[disciplina]).innerText = totalFaltas;
+                }
+            });
+        }
+
+        // Inicializa a página
+        window.onload = () => {
+            verificarAutenticacao(); // Verifica a autenticação
+            carregarFaltas(); // Carrega as faltas
+        };
     </script>
 </body>
 </html>

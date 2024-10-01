@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, content="initial-scale=1.0">
     <title>Disciplinas - Portal da Faculdade</title>
     <style>
         body {
@@ -18,8 +18,8 @@
         }
         h1 {
             margin-bottom: 30px;
-            color: #333;
-            font-size: 2em;
+            color: #ffffff;
+            font-size: 2.5em;
         }
         .container {
             display: flex;
@@ -37,49 +37,51 @@
         .back-button {
             position: absolute;
             top: 20px;
-            left: 20px;
-            background: none;
+            padding: 10px 20px;
+            font-size: 1em;
             border: none;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 24px;
-            color: #5bc0de;
+            transition: background-color 0.3s;
+            color: white;
+            background-color: #3498db;
+        }
+        .back-button:hover, .logout-button:hover {
+            background-color: #2980b9;
+        }
+        .back-button {
+            left: 20px;
         }
         .logout-button {
             position: absolute;
             top: 20px;
             right: 20px;
             padding: 10px 20px;
-            background-color: #d9534f;
+            background-color: #e74c3c;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color 0.3s;
             font-size: 1em;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         .logout-button:hover {
             background-color: #c9302c;
         }
-        
         .text1 {
             font-size: 40px;
             color: #ffffff;
-         }
-
-         .back-button {
-            position: absolute; 
-            top: 20px;
-            left: 20px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 24px;
-            color: #5bc0de;
+        }
+        .phone {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #555;
         }
     </style>
 </head>
 <body>
-    <button class="back-button" onclick="location.href='sistema.html'" style="background: none; border: none; cursor: pointer; font-size: 24px; color: #ffffff;">
+    <button class="back-button" onclick="location.href='sistema.html'">
         &#8592;
     </button>
 
@@ -88,32 +90,39 @@
         <div class="discipline-card">
             <h2>Lógica Matemática</h2>
             <p>Professor: Frank Molitor</p>
+            <p class="phone">Telefone: (11) 91234-5678</p>
         </div>
         <div class="discipline-card">
             <h2>Lógica Computacional</h2>
             <p>Professor: Osvaldo Silva</p>
+            <p class="phone">Telefone: (21) 99876-5432</p>
         </div>
         <div class="discipline-card">
             <h2>Database Modeling & SQL</h2>
             <p>Professor: Matheus Melo</p>
+            <p class="phone">Telefone: (31) 98765-4321</p>
         </div>
         <div class="discipline-card">
             <h2>Gestão da Diversidade</h2>
             <p>Professor: Alcineide Pereira</p>
+            <p class="phone">Telefone: (41) 97654-3210</p>
         </div>
         <div class="discipline-card">
             <h2>Sustentabilidade nas Organizações</h2>
             <p>Professor: Mariana Igesca</p>
+            <p class="phone">Telefone: (51) 96543-2109</p>
         </div>
         <div class="discipline-card">
             <h2>Agile Methods</h2>
             <p>Professor: Ligia Zago</p>
+            <p class="phone">Telefone: (61) 95432-1098</p>
         </div>
     </div>
+
     <button class="logout-button" onclick="location.href='login.html'">Sair</button>
-</body>
-<script>
-    function verificarAutenticacao() {
+
+    <script>
+        function verificarAutenticacao() {
             const token = localStorage.getItem('token');
             if (!token) {
                 alert("Você precisa estar logado para acessar esta página.");
@@ -122,5 +131,6 @@
         }
 
         verificarAutenticacao();
-</script>
+    </script>
+</body>
 </html>
