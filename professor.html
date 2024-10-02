@@ -131,19 +131,19 @@
     <script>
 
         
-        function verificarAutenticacao() {
-            const tipo_usuario = localStorage.getItem('tipo_usuario');
-            const token = localStorage.getItem('token');
-            const alunoId = localStora.getItem('alunoId');
-            if (!token) {
-                alert("Você precisa estar logado para acessar esta página.");
-                logout();
-            }
-            if (tipo_usuario !== 'aluno') {
+    function verificarAutenticacao() {
+        const tipo_usuario = localStorage.getItem('tipo_usuario');
+        const token = localStorage.getItem('token');
+        const alunoId = localStorage.getItem('alunoId');
+        if (!token) {
+            alert("Você precisa estar logado para acessar esta página.");
+            logout();
+        }
+        else if (tipo_usuario !== 'professores') {
             alert('Acesso não permitido! Você não tem permissão para acessar esta página.');
             logout();
-            }
         }
+    }
 
         function logout() {
             localStorage.removeItem('token'); // Remove o token do localStorage
