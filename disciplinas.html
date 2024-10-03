@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, content="initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Disciplinas - Portal da Faculdade</title>
     <style>
         body {
@@ -86,60 +86,87 @@
     </button>
 
     <h1 class="text1">Disciplinas</h1>
-    <div class="container">
-        <div class="discipline-card">
-            <h2>Lógica Matemática</h2>
-            <p>Professor: Frank Molitor</p>
-            <p class="phone">Telefone: (11) 91234-5678</p>
-        </div>
-        <div class="discipline-card">
-            <h2>Lógica Computacional</h2>
-            <p>Professor: Osvaldo Silva</p>
-            <p class="phone">Telefone: (21) 99876-5432</p>
-        </div>
-        <div class="discipline-card">
-            <h2>Database Modeling & SQL</h2>
-            <p>Professor: Matheus Melo</p>
-            <p class="phone">Telefone: (31) 98765-4321</p>
-        </div>
-        <div class="discipline-card">
-            <h2>Gestão da Diversidade</h2>
-            <p>Professor: Alcineide Pereira</p>
-            <p class="phone">Telefone: (41) 97654-3210</p>
-        </div>
-        <div class="discipline-card">
-            <h2>Sustentabilidade nas Organizações</h2>
-            <p>Professor: Mariana Igesca</p>
-            <p class="phone">Telefone: (51) 96543-2109</p>
-        </div>
-        <div class="discipline-card">
-            <h2>Agile Methods</h2>
-            <p>Professor: Ligia Zago</p>
-            <p class="phone">Telefone: (61) 95432-1098</p>
-        </div>
+    <div class="container" id="discipline-container">
     </div>
+    
     <button class="logout-button" onclick="logout()">Sair</button>
+
     <script>
-    function verificarAutenticacao() {
-        const tipo_usuario = localStorage.getItem('tipo_usuario');
-        const token = localStorage.getItem('token');
-        const alunoId = localStorage.getItem('alunoId');
-        if (!token) {
-            alert("Você precisa estar logado para acessar esta página.");
-            logout();
+        // Matriz com as disciplinas por semestre
+        const disciplinasPorSemestre = {
+            GTI1NA: [
+                { nome: "Lógica Matemática", professor: "Frank Molitor", telefone: "(11) 91234-5678" },
+                { nome: "Lógica Computacional", professor: "Osvaldo Junior", telefone: "(21) 99999-8888" },
+                { nome: "Database Modeling & SQL", professor: "Matheus Melo", telefone: "(31) 98765-4321" },
+                { nome: "Gestão da Diversidade", professor: "Alcineide Pereira", telefone: "(41) 97654-3210" },
+                { nome: "Sustentabilidade nas Organizações", professor: "Mariana Igesca", telefone: "(51) 96543-2109"},
+                { nome: "Métodos Ágeis", professor: "Ligia Zago", telefone: "(61) 91831-3142"}
+            ],
+            CDC1NA: [
+                { nome: "Lógica Matemática", professor: "Frank Molitor", telefone: "(11) 91234-5678" },
+                { nome: "Lógica Computacional", professor: "Osvaldo Junior", telefone: "(21) 99999-8888" },
+                { nome: "Database Modeling & SQL", professor: "Matheus Melo", telefone: "(31) 98765-4321" },
+                { nome: "Gestão da Diversidade", professor: "Alcineide Pereira", telefone: "(41) 97654-3210" },
+                { nome: "Sustentabilidade nas Organizações", professor: "Mariana Igesca", telefone: "(51) 96543-2109"},
+                { nome: "Métodos Ágeis", professor: "Ligia Zago", telefone: "(61) 91831-3142"}
+            ],
+            2: [
+                { nome: "Cálculo I", professor: "Ana Lima", telefone: "(31) 98765-4321" },
+                { nome: "Algoritmos", professor: "Julio Cesar", telefone: "(41) 91234-5678" }
+            ]
+        };
+
+        function renderizarDisciplinas() {
+            const semestre = localStorage.getItem('semestre');
+            const disciplinas = disciplinasPorSemestre[semestre] || [];
+
+            const container = document.getElementById('discipline-container');
+            container.innerHTML = '';
+
+            if (disciplinas.length === 0) {
+                container.innerHTML = '<h3 class="text1">Nenhuma disciplina disponível para este semestre.</h3>';
+                return;
+            }
+
+            disciplinas.forEach(disciplina => {
+                const card = document.createElement('div');
+                card.className = 'discipline-card';
+                card.innerHTML = `
+                    <h2>${disciplina.nome}</h2>
+                    <p>Professor: ${disciplina.professor}</p>
+                    <p class="phone">Telefone: ${disciplina.telefone}</p>
+                `;
+                container.appendChild(card);
+            });
         }
-        else if (tipo_usuario !== 'aluno') {
-            alert('Acesso não permitido! Você não tem permissão para acessar esta página.');
-            logout();
-        }
-    }
 
         function logout() {
-            localStorage.removeItem('token'); // Remove o token do localStorage
-            localStorage.removeItem('alunoId'); // (Opcional) Remova o alunoId, se necessário
-            window.location.href = 'login.html'; // Redireciona para a página de login
+            localStorage.removeItem('token');  
+            localStorage.removeItem('alunoId');
+            localStorage.removeItem('semestre');
+            localStorage.removeItem('semestre')
+            window.location.href = 'login.html';
         }
-        verificarAutenticacao();
+
+
+        function verificarAutenticacao() {
+            const token = localStorage.getItem('token');
+            const tipo_usuario = localStorage.getItem('tipo_usuario');
+            if (!token) {
+                alert("Você precisa estar logado para acessar esta página.");
+                logout();
+            }
+            else if (tipo_usuario !== 'alunos') {
+                alert('Acesso não permitido! Você não tem permissão para acessar esta página.');
+                logout();
+            }
+        }
+
+
+        window.onload = () => {
+            verificarAutenticacao();
+            renderizarDisciplinas();
+        };
     </script>
 </body>
 </html>

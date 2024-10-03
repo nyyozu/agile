@@ -198,23 +198,55 @@
     <script>
         document.getElementById('supportForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            openModal();
-        });
 
-        function openModal() {
-            document.getElementById("myModal").style.display = "flex";
-        }
+        // Coleta os dados do formulário
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const subject = document.getElementById('subject').value;
+        const description = document.getElementById('description').value;
 
-        function closeModal() {
-            document.getElementById("myModal").style.display = "none";
-        }
+        const data = {
+            name: name,
+            email: email,
+            subject: subject,
+            description: description
+        };
 
-        window.onclick = function(event) {
-            const modal = document.getElementById("myModal");
-            if (event.target == modal) {
-                closeModal();
+        fetch('http://localhost:5000/send-email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)  // Envia os dados como JSON
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                openModal();
+            } else {
+                alert('Erro ao enviar o e-mail de confirmação.');
             }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao enviar o e-mail de confirmação.');
+        });
+    });
+
+    function openModal() {
+        document.getElementById("myModal").style.display = "flex";
+    }
+
+    function closeModal() {
+        document.getElementById("myModal").style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById("myModal");
+        if (event.target == modal) {
+            closeModal();
         }
+    };
 
         function verificarAutenticacao() {
             const tipo_usuario = localStorage.getItem('tipo_usuario');
@@ -224,18 +256,21 @@
             alert("Você precisa estar logado para acessar esta página.");
             logout();
         }
-        else if (tipo_usuario !== 'aluno') {
+        else if (tipo_usuario !== 'alunos') {
             alert('Acesso não permitido! Você não tem permissão para acessar esta página.');
             logout();
         }
     }
 
-        function logout() {
-            localStorage.removeItem('token'); // Remove o token do localStorage
-            localStorage.removeItem('alunoId'); // (Opcional) Remova o alunoId, se necessário
-        window.location.href = 'login.html'; // Redireciona para a página de login
-        }
-        verificarAutenticacao(); // Verifica se o usuário está logado
+    function logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('alunoId');
+        localStorage.removeItem('tipo_usuario');
+        localStorage.removeItem('semestre')
+        window.location.href = 'login.html';
+    }
+
+    verificarAutenticacao(); // Verifica se o usuário está logado
     </script>
 </body>
 </html>

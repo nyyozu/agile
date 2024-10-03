@@ -67,7 +67,6 @@
             font-size: 1rem;
             transition: background-color 0.3s;
         }
-
         .logout-button:hover {
             background-color: #c9302c;
         }
@@ -89,11 +88,6 @@
         .back-button {
             left: 20px;
         }
-        .logout-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
     </style>
 </head>
 <body>
@@ -101,50 +95,79 @@
     <button class="logout-button" onclick="logout()">Sair</button>
 
     <h1>Calendário Acadêmico</h1>
-    <div class="container">
-        <div class="day-card">
-            <h2>Segunda-feira</h2>
-            <p>Disciplinas: Lógica Matemática</p>
-        </div>
-        <div class="day-card">
-            <h2>Terça-feira</h2>
-            <p>Disciplinas: Lógica Computacional</p>
-        </div>
-        <div class="day-card">
-            <h2>Quarta-feira</h2>
-            <p>Disciplinas: Database Modeling & SQL</p>
-        </div>
-        <div class="day-card">
-            <h2>Quinta-feira</h2>
-            <p>Disciplinas: EAD (ainda não definido)</p>
-        </div>
-        <div class="day-card">
-            <h2>Sexta-feira</h2>
-            <p>Disciplinas: Agile Methods</p>
-        </div>
-    </div>
+    <div class="container" id="disciplinas-container"></div>
 
     <script>
-        
-    function verificarAutenticacao() {
-        const tipo_usuario = localStorage.getItem('tipo_usuario');
-        const token = localStorage.getItem('token');
-        const alunoId = localStorage.getItem('alunoId');
-        if (!token) {
-            alert("Você precisa estar logado para acessar esta página.");
-            logout();
+        function verificarAutenticacao() {
+            const tipo_usuario = localStorage.getItem('tipo_usuario');
+            const token = localStorage.getItem('token');
+            const alunoId = localStorage.getItem('alunoId');
+            if (!token) {
+                alert("Você precisa estar logado para acessar esta página.");
+                logout();
+            } else if (tipo_usuario != 'alunos') {
+                alert('Acesso não permitido! Você não tem permissão para acessar esta página.');
+                logout();
+            } else {
+                renderizarDisciplinas();
+            }
         }
-        else if (tipo_usuario != 'aluno') {
-            alert('Acesso não permitido! Você não tem permissão para acessar esta página.');
-            logout();
-        }
-    }
 
         function logout() {
-        localStorage.removeItem('token'); // Remove o token do localStorage
-        localStorage.removeItem('alunoId'); // (Opcional) Remova o alunoId, se necessário
-        window.location.href = 'login.html'; // Redireciona para a página de login
+            localStorage.removeItem('token');
+            localStorage.removeItem('alunoId');
+            localStorage.removeItem('tipo_usuario');
+            localStorage.removeItem('semestre')
+            window.location.href = 'login.html';
         }
+
+        // Array manual com as disciplinas e dias da semana
+        const disciplinasPorSemestre = {
+            GTI1NA: [
+                { dia: "Segunda-feira", disciplina: "Lógica Matemática", professor: "Frank Molitor" },
+                { dia: "Terça-feira", disciplina: "Lógica Computacional", professor: "Osvaldo Junior" },
+                { dia: "Quarta-feira", disciplina: "Modelagem de Banco de Dados", professor: "Matheus Melo" },
+                { dia: "Quinta-feira", disciplina: "Gestão da Diversidade, Sustentabilidade nas Organizações", professor: "Alcineide Pereira, Mariana Igesca" },
+                { dia: "Sexta-feira", disciplina: "Métodos Ágeis", professor: "Ligia Zago" }
+            ],
+            CDC1NA: [
+                { dia: "Segunda-feira", disciplina: "Lógica Matemática", professor: "Frank Molitor" },
+                { dia: "Terça-feira", disciplina: "Lógica Computacional", professor: "Osvaldo Junior" },
+                { dia: "Quarta-feira", disciplina: "Modelagem de Banco de Dados", professor: "Matheus Melo" },
+                { dia: "Quinta-feira", disciplina: "Gestão da Diversidade, Sustentabilidade nas Organizações", professor: "Alcineide Pereira, Mariana Igesca" },
+                { dia: "Sexta-feira", disciplina: "Métodos Ágeis", professor: "Ligia Zago" }
+            ],
+            // Adicione outros semestres aqui se necessário
+        };
+
+        function renderizarDisciplinas() {
+            const semestre = localStorage.getItem('semestre');  // Pega o semestre do localStorage
+
+            // Verifica se o semestre existe e se tem disciplinas para mostrar
+            if (!semestre || !disciplinasPorSemestre[semestre]) {
+                const container = document.getElementById('disciplinas-container');
+                container.innerHTML = '<h3 class="text1">Nenhuma disciplina disponível para este semestre.</h3>';
+                return;
+            }
+
+            const disciplinas = disciplinasPorSemestre[semestre];  // Puxa as disciplinas do semestre
+
+            const container = document.getElementById('disciplinas-container');
+            container.innerHTML = '';  // Limpa o conteúdo anterior
+
+            // Loop para criar os cards para cada disciplina
+            disciplinas.forEach(item => {
+                const card = document.createElement('div');
+                card.classList.add('day-card');
+                card.innerHTML = `
+                    <h2>${item.dia}</h2>
+                    <p>Disciplina: ${item.disciplina}</p>
+                    <p>Professor: ${item.professor}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
         verificarAutenticacao();
     </script>
 </body>

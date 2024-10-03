@@ -1,4 +1,12 @@
 
+CREATE TABLE usuarios (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    senha int not null,
+    tipo_usuario enum('alunos', 'professores'),
+    semestre int
+);
 
 CREATE TABLE faltas (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -15,14 +23,6 @@ CREATE TABLE notas (
     nota DECIMAL(5,2),
     FOREIGN KEY (aluno_id) references usuarios(id)
     );
-
-CREATE TABLE usuarios (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-    nome VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    senha int not null,
-    tipo_usuário enum(alunos, professores)
-);
 
 CREATE TABLE certificados (
     certificado_id INT AUTO_INCREMENT PRIMARY KEY,

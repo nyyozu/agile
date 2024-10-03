@@ -6,6 +6,12 @@ import jwt
 import datetime
 from functools import wraps
 
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+
 app = Flask(__name__)
 CORS(app)
 
@@ -44,6 +50,8 @@ def register():
     nome = request.json['nome']
     email = request.json['email']
     senha = request.json['senha']
+    tipo_usuario = 'alunos'
+    semestre = '0'
 
     cur = mysql.connection.cursor()
     cur.execute('SELECT * FROM usuarios WHERE email = %s', (email,))
@@ -52,7 +60,7 @@ def register():
 
     hashed_senha = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt())
     try:
-        cur.execute('INSERT INTO usuarios (nome, email, senha) VALUES (%s, %s, %s)', (nome, email, hashed_senha))
+        cur.execute('INSERT INTO usuarios (nome, email, senha, tipo_usuario, semestre) VALUES (%s, %s, %s, %s, %s)', (nome, email, hashed_senha, tipo_usuario, semestre))
         mysql.connection.commit()
     except Exception as e:
         return jsonify({'message': 'Erro ao registrar usuário: ' + str(e)}), 500
@@ -81,7 +89,8 @@ def login():
             'message': f'Bem-vindo, {usuario[1]}!',
             'token': token,
             'alunoId': usuario[0],
-            'tipo_usuario': usuario[4]  # Aqui, usuário[4] deve ser o tipo de usuário (aluno ou professor)
+            'tipo_usuario': usuario[4], # acessa o valor da 5° coluna da tabela usuario
+            'semestre': usuario[5]
         }), 200
 
     return jsonify({'message': 'Email ou senha inválidos!'}), 401
@@ -207,5 +216,57 @@ def obter_certificados(aluno_id):
     
     return jsonify(certificados)
 
+@app.route('/send-email', methods=['POST'])
+def send_email():
+
+    data = request.get_json()
+    name = data.get('name')
+    email = data.get('email')
+    subject = data.get('subject')
+    description = data.get('description')
+
+    toaddr_support = 'ligiatrabalho9@gmail.com'
+    sender_email = 'ligiatrabalho9@gmail.com'  
+    sender_password = 'pzew ngbi vdrg gmmt'  
+
+    receiver_email = email
+
+    subject_text = f"Chamado de Suporte: {subject}"
+    body_user = f"Olá {name},\n\nSeu chamado foi registrado com o seguinte assunto: '{subject}'.\nDescrição: {description}\n\nAguarde nossa resposta em breve."
+
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
+    msg['Subject'] = subject_text
+
+
+    msg.attach(MIMEText(body_user, 'plain'))
+
+    try:
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls() 
+        server.login(sender_email, sender_password)
+
+        msg['To'] = receiver_email 
+        text = msg.as_string()
+        server.sendmail(sender_email, receiver_email, text)
+
+        msg_support = MIMEMultipart()
+        msg_support['From'] = sender_email
+        msg_support['To'] = toaddr_support
+        msg_support['Subject'] = subject_text
+
+        support_body = f"Novo chamado de suporte:\n\nNome: {name}\nE-mail: {email}\nAssunto: {subject}\nDescrição: {description}"
+        msg_support.attach(MIMEText(support_body, 'plain'))
+
+        server.sendmail(sender_email, toaddr_support, msg_support.as_string())
+
+        server.quit()
+
+        return jsonify({"success": True, "message": "E-mails enviados com sucesso!"}), 200
+
+    except Exception as e:
+        print("Erro ao enviar e-mail:", e)
+        return jsonify({"success": False, "message": f"Erro ao enviar e-mail: {e}"}), 500
+    
 if __name__ == '__main__':
     app.run(debug=True)

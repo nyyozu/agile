@@ -154,7 +154,7 @@
             alert("Você precisa estar logado para acessar esta página.");
             logout();
         }
-        else if (tipo_usuario !== 'aluno') {
+        else if (tipo_usuario !== 'alunos') {
             alert('Acesso não permitido! Você não tem permissão para acessar esta página.');
             logout();
         }
@@ -164,6 +164,7 @@
             localStorage.removeItem('token'); // Remove o token do localStorage
             localStorage.removeItem('alunoId'); // (Opcional) Remova o alunoId, se necessário
             localStorage.removeItem('tipo_usuario')
+            localStorage.removeItem('semestre')
             window.location.href = 'login.html'; // Redireciona para a página de login
         }
         window.onload = verificarAutenticacao();

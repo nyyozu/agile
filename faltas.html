@@ -120,7 +120,7 @@
             alert("Você precisa estar logado para acessar esta página.");
             logout();
         }
-        else if (tipo_usuario !== 'aluno') {
+        else if (tipo_usuario !== 'alunos') {
             alert('Acesso não permitido! Você não tem permissão para acessar esta página.');
             logout();
         }
@@ -178,15 +178,16 @@
     }
 
     function logout() {
-        localStorage.removeItem('token'); // Remove o token do localStorage
-        localStorage.removeItem('alunoId'); // (Opcional) Remova o alunoId, se necessário
-        window.location.href = 'login.html'; // Redireciona para a página de login
-        }
+        localStorage.removeItem('token');
+        localStorage.removeItem('alunoId');
+        localStorage.removeItem('tipo_usuario');
+        localStorage.removeItem('semestre')
+        window.location.href = 'login.html';
+    }
 
-        // Inicializa a página
-        window.onload = () => {
-            verificarAutenticacao(); // Verifica a autenticação
-            carregarFaltas(); // Carrega as faltas
+    window.onload = () => {
+        verificarAutenticacao();
+        carregarFaltas();
         };
     </script>
 </body>

@@ -1,0 +1,5 @@
+pip install flask_mysqldb
+pip install flask
+pip install cors
+pip install bcrypt
+pip install PyJWT

@@ -166,6 +166,7 @@ async function login() {
         localStorage.setItem('token', data.token);
         localStorage.setItem('alunoId', data.alunoId); // Armazena o alunoId
         localStorage.setItem('tipo_usuario', data.tipo_usuario);
+        localStorage.setItem('semestre', data.semestre);
         if(data.tipo_usuario === 'alunos'){   
             window.location.href = 'sistema.html';
         }else if(data.tipo_usuario === 'professores'){
