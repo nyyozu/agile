@@ -164,7 +164,7 @@ async function login() {
     if (response.ok) {
         alert(data.message);
         localStorage.setItem('token', data.token);
-        localStorage.setItem('alunoId', data.alunoId); // Armazena o alunoId
+        localStorage.setItem('alunoId', data.alunoId);
         localStorage.setItem('tipo_usuario', data.tipo_usuario);
         localStorage.setItem('semestre', data.semestre);
         if(data.tipo_usuario === 'alunos'){   
