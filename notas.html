@@ -126,7 +126,7 @@
 
         function exibirNotas(notas) {
     const container = document.getElementById('gradesContainer');
-    container.innerHTML = ''; // Limpa o container
+    container.innerHTML = '';
 
     const subjects = [
         'Lógica Matemática',
@@ -138,25 +138,25 @@
     ];
 
     subjects.forEach(subject => {
-        // Tenta encontrar a nota para a disciplina atual
+        
         const notaObj = notas.find(n => n.disciplina === subject);
         
-        // Verifique se a nota foi encontrada
+        
         if (notaObj) {
-            console.log(`Nota encontrada para ${subject}:`, notaObj.nota); // Log a nota encontrada
+            console.log(`Nota encontrada para ${subject}:`, notaObj.nota);
         } else {
-            console.log(`Nota não encontrada para ${subject}, usando 0.0`); // Log se a nota não é encontrada
+            console.log(`Nota não encontrada para ${subject}, usando 0.0`);
         }
 
-        // Define a nota, se não encontrada, use 0.0
-        const nota = (notaObj && !isNaN(notaObj.nota)) ? parseFloat(notaObj.nota) : 0.0; // Converte para número
+        
+        const nota = (notaObj && !isNaN(notaObj.nota)) ? parseFloat(notaObj.nota) : 0.0;
 
-        // Adiciona log para verificar o valor que será exibido
+        
         console.log(`Exibindo nota para ${subject}:`, nota);
 
         const card = document.createElement('div');
         card.className = 'card';
-        card.innerHTML = `<h2>${subject}</h2><p>Nota: ${nota.toFixed(1)}</p>`; // Exibe a nota
+        card.innerHTML = `<h2>${subject}</h2><p>Nota: ${nota.toFixed(1)}</p>`; 
         container.appendChild(card);
     });
 }
