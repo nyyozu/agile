@@ -146,12 +146,11 @@ def get_notas(aluno_id):
         notas = cur.fetchall()
         cur.close()
 
-        # Transformando as notas em um formato JSON
         notas_json = [{'disciplina': nota[0], 'nota': nota[1]} for nota in notas]
         return jsonify(notas_json), 200
     except Exception as e:
-        print(f"Erro: {e}")  # Log do erro para depuração
-        return jsonify({'error': str(e)}), 500  # Retorna erro 500
+        print(f"Erro: {e}")  
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/faltas/<int:aluno_id>', methods=['GET'])
 def get_faltas(aluno_id):
@@ -160,7 +159,7 @@ def get_faltas(aluno_id):
     faltas = cur.fetchall()
     cur.close()
 
-    # Transformando as faltas em um formato JSON
+
     faltas_json = [{'disciplina': falta[0], 'total_faltas': falta[1]} for falta in faltas]
     return jsonify(faltas_json), 200
 
@@ -169,7 +168,7 @@ def registrar_faltas():
     data = request.get_json()
     aluno_id = data.get('aluno_id')
     disciplina = data.get('disciplina')
-    dias = data.get('dias')  # Espera uma data no formato 'YYYY-MM-DD'
+    dias = data.get('dias')  #'YYYY-MM-DD'
     
     if not aluno_id or not disciplina or not dias:
         return jsonify({'error': 'Dados incompletos.'}), 400
