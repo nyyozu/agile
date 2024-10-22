@@ -86,18 +86,17 @@
         }
 
         .certification-card {
-        position: relative; /* Para permitir que o botão seja posicionado corretamente */
+        position: relative;
         }
 
-        /* Personalizar o ícone do botão */
         .download-button {
-            font-size: 1.5em; /* Tamanho do ícone */
-            transition: color 0.3s; /* Efeito de transição */
+            font-size: 1.5em;
+            transition: color 0.3s;
             margin-top: 35px
         }
 
         .download-button:hover {
-            color: #2980b9; /* Mudança de cor ao passar o mouse */
+            color: #2980b9;
         }
     </style>
 </head>
@@ -109,7 +108,7 @@
     </button>
     <h1>Certificações Acadêmicas</h1>
     <div class="container" id="certificationsContainer">
-        <!-- Os certificados serão adicionados aqui dinamicamente -->
+
     </div>
     <button class="logout-button" onclick="logout()">Sair</button>
 
@@ -152,14 +151,13 @@
         const certificados = await response.json();
 
         if (certificados.length === 0) {
-            return; // Não mostra nada se não houver certificados
+            return;
         }
 
         certificados.forEach(certificado => {
             const card = document.createElement('div');
             card.classList.add('certification-card');
 
-            // Exibir os dados do certificado na tela
             card.innerHTML = `
                 <h2>${certificado[2]}</h2>
                 <p>Descrição: ${certificado[3]}</p>
