@@ -151,7 +151,6 @@
         }
 
         function exibirFaltas(faltas) {
-    // Inicializa um objeto para armazenar as faltas por disciplina
     const faltasPorDisciplina = {
         'Lógica Matemática': 0,
         'Lógica Computacional': 0,
@@ -159,18 +158,16 @@
         'Agile Methods': 0
     };
 
-    // Preenche o objeto com os dados recebidos
     faltas.forEach(falta => {
         const disciplina = falta.disciplina;
         const totalFaltas = falta.total_faltas;
 
-        // Verifica se a disciplina está no objeto e atualiza o número de faltas
         if (faltasPorDisciplina[disciplina] !== undefined) {
             faltasPorDisciplina[disciplina] = totalFaltas;
         }
     });
 
-    // Atualiza a exibição no HTML
+
     document.getElementById("mathAbsences").innerText = faltasPorDisciplina['Lógica Matemática'];
     document.getElementById("logicCompAbsences").innerText = faltasPorDisciplina['Lógica Computacional'];
     document.getElementById("dbAbsences").innerText = faltasPorDisciplina['Database Modeling & SQL'];
