@@ -121,7 +121,6 @@
             window.location.href = 'login.html';
         }
 
-        // Array manual com as disciplinas e dias da semana
         const disciplinasPorSemestre = {
             GTI1NA: [
                 { dia: "Segunda-feira", disciplina: "Lógica Matemática", professor: "Frank Molitor" },
@@ -137,25 +136,23 @@
                 { dia: "Quinta-feira", disciplina: "Gestão da Diversidade, Sustentabilidade nas Organizações", professor: "Alcineide Pereira, Mariana Igesca" },
                 { dia: "Sexta-feira", disciplina: "Métodos Ágeis", professor: "Ligia Zago" }
             ],
-            // Adicione outros semestres aqui se necessário
         };
 
         function renderizarDisciplinas() {
-            const semestre = localStorage.getItem('semestre');  // Pega o semestre do localStorage
+            const semestre = localStorage.getItem('semestre'); 
 
-            // Verifica se o semestre existe e se tem disciplinas para mostrar
             if (!semestre || !disciplinasPorSemestre[semestre]) {
                 const container = document.getElementById('disciplinas-container');
                 container.innerHTML = '<h3 class="text1">Nenhuma disciplina disponível para este semestre.</h3>';
                 return;
             }
 
-            const disciplinas = disciplinasPorSemestre[semestre];  // Puxa as disciplinas do semestre
+            const disciplinas = disciplinasPorSemestre[semestre];
 
             const container = document.getElementById('disciplinas-container');
-            container.innerHTML = '';  // Limpa o conteúdo anterior
+            container.innerHTML = '';
 
-            // Loop para criar os cards para cada disciplina
+         
             disciplinas.forEach(item => {
                 const card = document.createElement('div');
                 card.classList.add('day-card');
