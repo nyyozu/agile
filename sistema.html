@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal do Aluno</title>
     <style>
-        /* Estilo geral */
+
         body {
             background-image: url("fundo.gif");
             background-size: cover;
@@ -37,7 +37,6 @@
             width: 100%;
         }
 
-        /* Estilo dos cards */
         .card {
             background-color: #f9f9f9;
             border-radius: 20px;
@@ -161,11 +160,11 @@
     }
 
         function logout() {
-            localStorage.removeItem('token'); // Remove o token do localStorage
-            localStorage.removeItem('alunoId'); // (Opcional) Remova o alunoId, se necessário
+            localStorage.removeItem('token'); 
+            localStorage.removeItem('alunoId'); 
             localStorage.removeItem('tipo_usuario')
             localStorage.removeItem('semestre')
-            window.location.href = 'login.html'; // Redireciona para a página de login
+            window.location.href = 'login.html'; 
         }
         window.onload = verificarAutenticacao();
     </script>
