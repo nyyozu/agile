@@ -3,9 +3,9 @@ CREATE TABLE usuarios (
 	id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
-    senha int not null,
+    senha VARCHAR(150) not null,
     tipo_usuario enum('alunos', 'professores'),
-    semestre int
+    semestre varchar(15)
 );
 
 CREATE TABLE faltas (
