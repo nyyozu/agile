@@ -51,7 +51,7 @@ def register():
     email = request.json['email']
     senha = request.json['senha']
     tipo_usuario = 'alunos'
-    semestre = '0'
+    semestre = None
 
     cur = mysql.connection.cursor()
     cur.execute('SELECT * FROM usuarios WHERE email = %s', (email,))
@@ -120,23 +120,24 @@ def logout():
     return jsonify({"message": "Token não encontrado."}), 400
 
 
-@app.route('/lancarnota', methods=['POST'])
+@app.route('/lançar_nota', methods=['POST'])
 def lancar_nota():
-    data = request.get_json()
-    aluno_id = data['aluno_id']
-    disciplina = data['disciplina']
-    nota = data['nota']
-
-    cur = mysql.connection.cursor()
-
     try:
-        cur.execute('INSERT INTO notas (aluno_id, disciplina, nota) VALUES (%s, %s, %s)', (aluno_id, disciplina, nota))
+        data = request.json
+        aluno_id = data['aluno_id']
+        materia = data['materia']
+        nota = data['nota']
+        
+        cur = mysql.connection.cursor()
+        cur.execute('INSERT INTO notas (aluno_id, disciplina, nota) VALUES (%s, %s, %s)', (aluno_id, materia, nota))
         mysql.connection.commit()
-        return jsonify({'message': 'Nota lançada com sucesso!'}), 201
-    except Exception as e:
-        return jsonify({'message': 'Erro ao lançar nota: ' + str(e)}), 500
-    finally:
         cur.close()
+        
+        return jsonify({'message': 'Nota lançada com sucesso!'}), 200
+    except Exception as e:
+        print(f"Erro: {e}")
+        return jsonify({'error': str(e)}), 500
+    
 
 @app.route('/notas/<int:aluno_id>', methods=['GET'])
 def get_notas(aluno_id):
@@ -267,5 +268,66 @@ def send_email():
         print("Erro ao enviar e-mail:", e)
         return jsonify({"success": False, "message": f"Erro ao enviar e-mail: {e}"}), 500
     
+
+@app.route('/getsemestres', methods=['GET'])
+def get_semestres():
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT DISTINCT semestre FROM usuarios')
+        semestres = cur.fetchall()
+        cur.close()
+        
+        # Convertendo o resultado para uma lista
+        semestres_json = [semestre[0] for semestre in semestres]
+        return jsonify(semestres_json), 200
+    except Exception as e:
+        print(f"Erro: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/getalunos', methods=['GET'])
+def get_alunos():
+    semestre = request.args.get('semestre')
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT id, nome FROM alunos WHERE semestre = %s', (semestre,))
+        alunos = cur.fetchall()
+        cur.close()
+
+        alunos_json = [{'id': aluno[0], 'nome': aluno[1]} for aluno in alunos]
+        return jsonify(alunos_json), 200
+    except Exception as e:
+        print(f"Erro: {e}")
+        return jsonify({'error': str(e)}), 500
+    
+
+materias = [
+    "Lógica Matemática",
+    "Lógica Computacional",
+    "Database Modeling & SQL",
+    "Agile Methods",
+    "Gestão da Diversidade",
+    "Sustentabilidade das Organizações"
+]
+
+@app.route('/getalunos_por_semestre', methods=['GET'])
+def get_alunos_por_semestre():
+    semestre = request.args.get('semestre')
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT id, nome FROM usuarios WHERE semestre = %s', (semestre,))
+        alunos = cur.fetchall()
+        cur.close()
+
+        alunos_json = [{'id': aluno[0], 'nome': aluno[1]} for aluno in alunos]
+        return jsonify(alunos_json), 200
+    except Exception as e:
+        print(f"Erro: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/getmaterias', methods=['GET'])
+def get_materias():
+    return jsonify(materias), 200
+
 if __name__ == '__main__':
     app.run(debug=True)

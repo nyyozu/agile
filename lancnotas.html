@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lançamento de Notas - Portal da Faculdade</title>
+    <style>
+        body {
+            background-image: url("fundo.gif");
+            font-family: 'Helvetica Neue', sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        h1 {
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            color: #ffffff;
+            font-weight: 700;
+            text-align: center;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+        .form-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: left;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .form-card input, .form-card select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .submit-button {
+            padding: 12px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        .submit-button:hover {
+            background-color: #2980b9;
+        }
+        .logout-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 12px 25px;
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        .back-button {
+            position: absolute;
+            top: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            color: white;
+            background-color: #3498db;
+        }
+        .back-button {
+            left: 20px;
+        }
+        .logout-button {
+            background-color: #d9534f;
+        }
+        .logout-button:hover {
+            background-color: #c9302c;
+        }
+        .back-button {
+            background-color: #3498db;
+            margin-bottom: 20px;
+        }
+        .back-button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="location.href='sistema.html'">&#8592; Voltar</button>
+    <button class="logout-button" onclick="logout()">Sair</button>
+
+    <h1>Lançamento de Notas</h1>
+    <div class="container">
+        <div class="form-card">
+            <form id="lancamento-form">
+                <select id="semestre" required>
+                    <option value="">Selecione o Semestre</option>
+                </select>
+                <select id="aluno" required>
+                    <option value="">Selecione o Aluno</option>
+                </select>
+                <select id="materia" required>
+                    <option value="">Selecione a Matéria</option>
+                </select>
+                <input type="number" id="nota" placeholder="Valor da Nota" step="0.01" required>
+                <button type="submit" class="submit-button">Lançar Nota</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Função para sair do sistema
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('alunoId');
+            localStorage.removeItem('tipo_usuario');
+            window.location.href = 'login.html';
+        }
+
+        // Carregar semestres disponíveis ao iniciar
+        document.addEventListener('DOMContentLoaded', carregarSemestres);
+
+        function carregarSemestres() {
+            fetch('http://localhost:5000/getsemestres') // URL do seu backend
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao buscar semestres');
+                    }
+                    return response.json();
+                })
+                .then(semestres => {
+                    const semestreSelect = document.getElementById('semestre');
+                    semestres.forEach(semestre => {
+                        if (semestre) { // Ignora semestres nulos ou vazios
+                            const option = document.createElement('option');
+                            option.value = semestre;
+                            option.textContent = semestre;
+                            semestreSelect.appendChild(option);
+                        }
+                    });
+                })
+                .catch(error => console.error('Erro ao carregar semestres:', error));
+        }
+
+        document.getElementById('semestre').addEventListener('change', function() {
+            const semestre = this.value;
+            carregarAlunos(semestre);
+            carregarMaterias();
+        });
+
+        function carregarAlunos(semestre) {
+            if (!semestre) {
+                alert('Por favor, selecione um semestre.');
+                return;
+            }
+
+            fetch(`http://localhost:5000/getalunos_por_semestre?semestre=${semestre}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao buscar alunos');
+                    }
+                    return response.json();
+                })
+                .then(alunos => {
+                    const alunoSelect = document.getElementById('aluno');
+                    alunoSelect.innerHTML = '<option value="">Selecione o Aluno</option>'; // Limpa opções
+
+                    alunos.forEach(aluno => {
+                        const option = document.createElement('option');
+                        option.value = aluno.id; // Assumindo que aluno tem um id
+                        option.textContent = aluno.nome; // Assumindo que aluno tem um nome
+                        alunoSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Erro ao carregar alunos:', error));
+        }
+
+        function carregarMaterias() {
+            const materias = [
+                "Lógica Matemática",
+                "Lógica Computacional",
+                "Database Modeling & SQL",
+                "Gestão da Diversidade",
+                "Sustentabilidade das Organizações",
+                "Agile Methods"
+            ];
+
+            const materiaSelect = document.getElementById('materia');
+            materiaSelect.innerHTML = '<option value="">Selecione a Matéria</option>'; // Limpa opções
+
+            materias.forEach(materia => {
+                const option = document.createElement('option');
+                option.value = materia;
+                option.textContent = materia;
+                materiaSelect.appendChild(option);
+            });
+        }
+
+        document.getElementById('lancamento-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const semestre = document.getElementById('semestre').value;
+            const aluno_id = document.getElementById('aluno').value; // Mudado para aluno_id
+            const materia = document.getElementById('materia').value;
+            const nota = document.getElementById('nota').value;
+
+            // Preparar o objeto de dados para enviar
+            const data = {
+                aluno_id: aluno_id,
+                materia: materia,
+                nota: parseFloat(nota) // Garantir que a nota é um número
+            };
+
+            // Fazer a requisição para lançar a nota
+            fetch('http://localhost:5000/lançar_nota', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao lançar nota');
+                }
+                return response.json();
+            })
+            .then(result => {
+                alert(result.message);
+                this.reset(); // Limpa o formulário após o envio
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao lançar nota');
+            });
+        });
+    </script>
+</body>
+</html>
