@@ -176,6 +176,10 @@
                 <input type="email" id="email" name="email" required>
             </div>
             <div class="form-group">
+                <label for="phone_number">Número de Telefone</label>
+                <input type="text" id="phone_number" name="phone_number" placeholder="Ex: 11999999999" required>
+            </div>
+            <div class="form-group">
                 <label for="subject">Assunto</label>
                 <input type="text" id="subject" name="subject" required>
             </div>
@@ -199,47 +203,61 @@
         document.getElementById('supportForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone_number = document.getElementById('phone_number').value;
+            const subject = document.getElementById('subject').value;
+            const description = document.getElementById('description').value;
 
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const subject = document.getElementById('subject').value;
-        const description = document.getElementById('description').value;
+            const data = {
+                name: name,
+                email: email,
+                phone_number: phone_number,
+                subject: subject,
+                description: description
+            };
 
-        const data = {
-            name: name,
-            email: email,
-            subject: subject,
-            description: description
-        };
+            Promise.all([
+                fetch('http://localhost:5000/send-sms', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                }),
+                fetch('http://localhost:5000/send-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+            ])
+            .then(responses => Promise.all(responses.map(response => response.json())))
+            .then(data => {
+                const smsSuccess = data[0].success;
+                const emailSuccess = data[1].success;
 
-        fetch('http://localhost:5000/send-email', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                openModal();
-            } else {
-                alert('Erro ao enviar o e-mail de confirmação.');
-            }
-        })
-        .catch(error => {
-            console.error('Erro:', error);
-            alert('Erro ao enviar o e-mail de confirmação.');
+                if (smsSuccess && emailSuccess) {
+                    openModal();
+                } else {
+                    if (!smsSuccess) alert('Erro ao enviar o chamado via SMS.');
+                    if (!emailSuccess) alert('Erro ao enviar o e-mail de confirmação.');
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao enviar os dados.');
+            });
         });
-    });
 
-    function openModal() {
-        document.getElementById("myModal").style.display = "flex";
-    }
+        function openModal() {
+            document.getElementById("myModal").style.display = "flex";
+        }
 
-    function closeModal() {
-        document.getElementById("myModal").style.display = "none";
-    }
+        function closeModal() {
+            document.getElementById("myModal").style.display = "none";
+        }
 
     window.onclick = function(event) {
         const modal = document.getElementById("myModal");

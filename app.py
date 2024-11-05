@@ -5,12 +5,14 @@ from flask_cors import CORS
 import jwt
 import datetime
 from functools import wraps
-
+from twilio.rest import Client
+from dotenv import load_dotenv
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -21,7 +23,7 @@ app.config['MYSQL_PASSWORD'] = 'ciaossu12'
 app.config['MYSQL_DB'] = 'sistema_faculdade'
 
 mysql = MySQL(app)
-
+load_dotenv()
 invalid_tokens = set()
 
 def token_required(f):
@@ -89,7 +91,7 @@ def login():
             'message': f'Bem-vindo, {usuario[1]}!',
             'token': token,
             'alunoId': usuario[0],
-            'tipo_usuario': usuario[4], # acessa o valor da 5° coluna da tabela usuario
+            'tipo_usuario': usuario[4],
             'semestre': usuario[5]
         }), 200
 
@@ -268,7 +270,33 @@ def send_email():
         print("Erro ao enviar e-mail:", e)
         return jsonify({"success": False, "message": f"Erro ao enviar e-mail: {e}"}), 500
     
+@app.route('/send-sms', methods=['POST'])
+def send_sms():
+    data = request.get_json()
+    name = data.get('name')
+    subject = data.get('subject')
+    description = data.get('description')
+    phone_number = "+55" + data.get('phone_number')
+    body_user = f"Olá {name},\n\nSeu chamado foi registrado com o seguinte assunto: '{subject}'.\nDescrição: {description}\n\nAguarde nossa resposta em breve."
 
+    account_sid = 'AC552fc4b74cfd9467b9258ccdba747b68'
+    auth_token = 'ee97d3275e37312cd3fdddcc2eb397a1'
+    from_number = '+12087144563'
+
+    client = Client(account_sid, auth_token)
+
+    try:
+        message = client.messages.create(
+            body=body_user,
+            from_=from_number,
+            to=phone_number
+        )
+        return jsonify({"success": True, "message": f"SMS enviado com sucesso! ID: {message.sid}"}), 200
+
+    except Exception as e:
+        print("Erro ao enviar SMS:", e)
+        return jsonify({"success": False, "message": f"Erro ao enviar SMS: {e}"}), 500
+    
 @app.route('/getsemestres', methods=['GET'])
 def get_semestres():
     try:
@@ -277,7 +305,6 @@ def get_semestres():
         semestres = cur.fetchall()
         cur.close()
         
-        # Convertendo o resultado para uma lista
         semestres_json = [semestre[0] for semestre in semestres]
         return jsonify(semestres_json), 200
     except Exception as e:

@@ -3,3 +3,5 @@ pip install flask
 pip install cors
 pip install bcrypt
 pip install PyJWT
+pip install twilio
+pip install python-dotenv
