@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal do Aluno</title>
     <style>
-        /* Estilo geral */
         body {
             background-image: url("fundo.gif");
             background-size: cover;
@@ -37,7 +36,6 @@
             width: 100%;
         }
 
-        /* Estilo dos cards */
         .card {
             background-color: #f9f9f9;
             border-radius: 20px;
@@ -115,7 +113,7 @@
             <div class="card-icon"><i class="fas fa-graduation-cap"></i></div>
             <h2>Lançamento de Notas</h2>
         </div>
-        <div class="card" onclick="location.href='certificacoes.html'">
+        <div class="card" onclick="location.href='lancfaltas.html'">
             <div class="card-icon"><i class="fas fa-certificate"></i></div>
             <h2>Lançamento de Faltas</h2>
         </div>
@@ -146,10 +144,10 @@
     }
 
         function logout() {
-            localStorage.removeItem('token'); // Remove o token do localStorage
-            localStorage.removeItem('alunoId'); // (Opcional) Remova o alunoId, se necessário
+            localStorage.removeItem('token');
+            localStorage.removeItem('alunoId');
             localStorage.removeItem('tipo_usuario')
-            window.location.href = 'login.html'; // Redireciona para a página de login
+            window.location.href = 'login.html';
         }
         verificarAutenticacao();
     </script>

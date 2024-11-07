@@ -96,91 +96,70 @@
     <div class="container" id="gradesContainer"></div>
     <button class="logout-button" onclick="logout()">Sair</button>
 
-
     <script>
         async function carregarNotas() {
             const alunoId = localStorage.getItem('alunoId');
-            if (!alunoId) {
-                console.error('ID do aluno não encontrado no localStorage.');
+            const semestre = localStorage.getItem('semestre');
+
+            if (!alunoId || !semestre) {
+                console.error('ID do aluno ou semestre não encontrados no localStorage.');
                 return;
             }
 
             try {
-                const response = await fetch(`http://localhost:5000/notas/${alunoId}`, {
-                    method: 'GET'
-                });
+                const responseNotas = await fetch(`http://localhost:5000/notas/${alunoId}`);
+                if (!responseNotas.ok) throw new Error('Falha ao buscar as notas.');
+                const notas = await responseNotas.json();
 
-                console.log('Response Status:', response.status);
-                if (!response.ok) {
-                    throw new Error('Falha ao buscar as notas. Status: ' + response.status);
-                }
+                const responseMaterias = await fetch(`http://localhost:5000/getmaterias?semestre=${semestre}`);
+                if (!responseMaterias.ok) throw new Error('Falha ao buscar as matérias do semestre.');
+                const materias = await responseMaterias.json();
 
-                const notas = await response.json();
-                console.log('Notas:', notas);
-                exibirNotas(notas);
+                exibirNotas(materias, notas);
             } catch (error) {
                 console.error('Erro:', error);
                 alert('Erro ao carregar as notas. Veja o console para detalhes.');
             }
         }
 
-        function exibirNotas(notas) {
-    const container = document.getElementById('gradesContainer');
-    container.innerHTML = '';
+        function exibirNotas(materias, notas) {
+            const container = document.getElementById('gradesContainer');
+            container.innerHTML = '';
 
-    const subjects = [
-        'Lógica Matemática',
-        'Lógica Computacional',
-        'Database Modeling & SQL',
-        'Gestão da Diversidade',
-        'Agile Methods',
-        'Sustentabilidade das Organizações'
-    ];
+            materias.forEach(materia => {
+                const notasMateria = notas.filter(n => n.disciplina === materia);
 
-    subjects.forEach(subject => {
-        
-        const notaObj = notas.find(n => n.disciplina === subject);
-        
-        
-        if (notaObj) {
-            console.log(`Nota encontrada para ${subject}:`, notaObj.nota);
-        } else {
-            console.log(`Nota não encontrada para ${subject}, usando 0.0`);
+                const somaNotas = notasMateria.reduce((total, item) => total + (parseFloat(item.nota) || 0), 0);
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `<h2>${materia}</h2><p>Nota Total: ${somaNotas.toFixed(1)}</p>`;
+                container.appendChild(card);
+            });
         }
 
-        
-        const nota = (notaObj && !isNaN(notaObj.nota)) ? parseFloat(notaObj.nota) : 0.0;
-
-        
-        console.log(`Exibindo nota para ${subject}:`, nota);
-
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `<h2>${subject}</h2><p>Nota: ${nota.toFixed(1)}</p>`; 
-        container.appendChild(card);
-    });
-}
-
-    function verificarAutenticacao() {
-        const tipo_usuario = localStorage.getItem('tipo_usuario');
-        const token = localStorage.getItem('token');
-        const alunoId = localStorage.getItem('alunoId');
-        if (!token) {
-            alert("Você precisa estar logado para acessar esta página.");
-            logout();
+        function verificarAutenticacao() {
+            const tipo_usuario = localStorage.getItem('tipo_usuario');
+            const token = localStorage.getItem('token');
+            const alunoId = localStorage.getItem('alunoId');
+            if (!token) {
+                alert("Você precisa estar logado para acessar esta página.");
+                logout();
+            }
+            else if (tipo_usuario !== 'alunos') {
+                alert('Acesso não permitido! Você não tem permissão para acessar esta página.');
+                logout();
+            }
         }
-        else if (tipo_usuario !== 'alunos') {
-            alert('Acesso não permitido! Você não tem permissão para acessar esta página.');
-            logout();
-        }
-    }
-    function logout() {
+
+        function logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('alunoId');
             localStorage.removeItem('tipo_usuario');
-            localStorage.removeItem('semestre')
+            localStorage.removeItem('semestre');
             window.location.href = 'login.html';
         }
+
         window.onload = () => {
             carregarNotas();
             verificarAutenticacao();

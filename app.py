@@ -3,7 +3,7 @@ from flask_mysqldb import MySQL
 import bcrypt
 from flask_cors import CORS
 import jwt
-import datetime
+from datetime import datetime, timedelta
 from functools import wraps
 from twilio.rest import Client
 from dotenv import load_dotenv
@@ -12,7 +12,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
-import os
+
 
 app = Flask(__name__)
 CORS(app)
@@ -25,6 +25,7 @@ app.config['MYSQL_DB'] = 'sistema_faculdade'
 mysql = MySQL(app)
 load_dotenv()
 invalid_tokens = set()
+current_time = datetime.now()
 
 def token_required(f):
     @wraps(f)
@@ -84,7 +85,7 @@ def login():
         token = jwt.encode({
             'email': email,
             'alunoId': usuario[0],
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+            'exp': datetime.utcnow() + timedelta(hours=1)
         }, 'seu_segredo', algorithm='HS256')
 
         return jsonify({
@@ -157,34 +158,48 @@ def get_notas(aluno_id):
 
 @app.route('/faltas/<int:aluno_id>', methods=['GET'])
 def get_faltas(aluno_id):
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT disciplina, COUNT(*) as total_faltas FROM faltas WHERE aluno_id = %s GROUP BY disciplina', (aluno_id,))
-    faltas = cur.fetchall()
-    cur.close()
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT disciplina, SUM(qnt_falta) FROM faltas WHERE aluno_id = %s GROUP BY disciplina', (aluno_id,))
+        faltas = cur.fetchall()
+        cur.close()
 
+        faltas_json = [{'disciplina': falta[0], 'total_faltas': falta[1]} for falta in faltas]
 
-    faltas_json = [{'disciplina': falta[0], 'total_faltas': falta[1]} for falta in faltas]
-    return jsonify(faltas_json), 200
+        return jsonify(faltas_json), 200
+    except Exception as e:
+        print(f"Erro: {e}")
+        return jsonify({'error': str(e)}), 500
+
 
 @app.route('/lancarfaltas', methods=['POST'])
 def registrar_faltas():
     data = request.get_json()
     aluno_id = data.get('aluno_id')
     disciplina = data.get('disciplina')
-    dias = data.get('dias')  #'YYYY-MM-DD'
-    
-    if not aluno_id or not disciplina or not dias:
+    dia = data.get('dia')
+    qnt_falta = data.get('qnt_falta')
+
+    if not aluno_id or not disciplina or not dia or not qnt_falta:
         return jsonify({'error': 'Dados incompletos.'}), 400
+
+    try:
+        dias_formatada = datetime.strptime(dia, "%Y-%m-%d").date()
+    except ValueError:
+        return jsonify({'error': 'Formato de data inválido. Use o formato yyyy-mm-dd.'}), 400
 
     cur = mysql.connection.cursor()
     try:
-        cur.execute('INSERT INTO faltas (aluno_id, disciplina, dias) VALUES (%s, %s, %s)', (aluno_id, disciplina, dias))
+        cur.execute('INSERT INTO faltas (aluno_id, disciplina, dia, qnt_falta) VALUES (%s, %s, %s, %s)', 
+                    (aluno_id, disciplina, dias_formatada, qnt_falta))
         mysql.connection.commit()
         return jsonify({'message': 'Falta registrada com sucesso.'}), 201
     except Exception as e:
+        print("Erro ao inserir no banco:", str(e))
         return jsonify({'error': str(e)}), 500
     finally:
         cur.close()
+
 
 @app.route('/lancarcertificado', methods=['POST'])
 def lancar_certificado():
@@ -328,15 +343,6 @@ def get_alunos():
         return jsonify({'error': str(e)}), 500
     
 
-materias = [
-    "Lógica Matemática",
-    "Lógica Computacional",
-    "Database Modeling & SQL",
-    "Agile Methods",
-    "Gestão da Diversidade",
-    "Sustentabilidade das Organizações"
-]
-
 @app.route('/getalunos_por_semestre', methods=['GET'])
 def get_alunos_por_semestre():
     semestre = request.args.get('semestre')
@@ -354,6 +360,27 @@ def get_alunos_por_semestre():
 
 @app.route('/getmaterias', methods=['GET'])
 def get_materias():
+    semestre = request.args.get('semestre')
+    
+    materias = [
+        "Lógica Matemática",
+        "Lógica Computacional",
+        "Database Modeling & SQL",
+        "Agile Methods",
+        "Gestão da Diversidade",
+        "Sustentabilidade das Organizações"
+    ]
+
+    if semestre == "BioMed1NA":
+        materias = [
+            "Anatomia Humana",
+            "Bioquímica",
+            "Biologia Celular",
+            "Histologia",
+            "Genética",
+            "Introdução à Biomedicina"
+        ]
+    
     return jsonify(materias), 200
 
 if __name__ == '__main__':

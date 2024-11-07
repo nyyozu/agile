@@ -168,15 +168,14 @@
                 </button>
             `;
 
-            // Estilizar o botão para estar no canto direito
             const button = card.querySelector('.download-button');
             button.style.position = 'absolute';
-            button.style.right = '20px'; // Alinha ao lado direito
-            button.style.top = '20px'; // Alinha ao topo do card
-            button.style.background = 'none'; // Remove fundo do botão
-            button.style.border = 'none'; // Remove borda do botão
+            button.style.right = '20px';
+            button.style.top = '20px';
+            button.style.background = 'none';
+            button.style.border = 'none';
             button.style.cursor = 'pointer';
-            button.style.color = '#3498db'; // Cor do ícone
+            button.style.color = '#3498db';
 
             container.appendChild(card);
         });
@@ -188,7 +187,6 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
-        // Adicionar conteúdo ao PDF
         doc.setFont("Helvetica", "normal");
         doc.setFontSize(16);
         doc.text("Certificado de Conclusão", 105, 30, { align: "center" });
@@ -199,7 +197,6 @@
         doc.text(`Instituição: ${instituicao}`, 20, 90);
         doc.text("Assinatura do Coordenador", 20, 110);
 
-        // Salvar o PDF
         doc.save(`certificado_${tipo.replace(/\s+/g, '_')}_${ano}.pdf`);
     }
 

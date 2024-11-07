@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lançamento de Notas - Portal da Faculdade</title>
+    <title>Lançamento de Faltas - Portal da Faculdade</title>
     <style>
         body {
             background-image: url("fundo.gif");
@@ -97,7 +97,7 @@
     <button class="back-button" onclick="location.href='professor.html'">&#8592; Voltar</button>
     <button class="logout-button" onclick="logout()">Sair</button>
 
-    <h1>Lançamento de Notas</h1>
+    <h1>Lançamento de Faltas</h1>
     <div class="container">
         <div class="form-card">
             <form id="lancamento-form">
@@ -110,8 +110,9 @@
                 <select id="materia" required>
                     <option value="">Selecione a Matéria</option>
                 </select>
-                <input type="number" id="nota" placeholder="Valor da Nota" step="0.01" required>
-                <button type="submit" class="submit-button">Lançar Nota</button>
+                <input type="number" id="faltas" placeholder="Quantidade de Faltas" required>
+                <input type="date" id="data" required>
+                <button type="submit" class="submit-button">Lançar Falta</button>
             </form>
         </div>
     </div>
@@ -215,36 +216,31 @@
             const semestre = document.getElementById('semestre').value;
             const aluno_id = document.getElementById('aluno').value;
             const materia = document.getElementById('materia').value;
-            const nota = document.getElementById('nota').value;
+            const qnt_falta = document.getElementById('faltas').value;
+            const data = document.getElementById('data').value;
 
-            const data = {
-                aluno_id: aluno_id,
-                materia: materia,
-                nota: parseFloat(nota)
-            };
+        const dados = {
+            aluno_id: aluno_id,
+            disciplina: materia,
+            qnt_falta: qnt_falta,
+            dia: data
+        };
 
-            fetch('http://127.0.0.1:5000/lançar_nota', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erro ao lançar nota');
-                }
-                return response.json();
-            })
-            .then(result => {
-                alert(result.message);
-                this.reset();
-            })
-            .catch(error => {
-                console.error('Erro:', error);
-                alert('Erro ao lançar nota');
-            });
+        fetch('http://127.0.0.1:5000/lancarfaltas', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dados)
+        })
+        .then(response => response.json())
+        .then(result => {
+            alert(result.message || 'Falta registrada com sucesso!');
+        })
+        .catch(error => {
+            console.error('Erro ao registrar falta:', error);
         });
+    });
     </script>
 </body>
 </html>

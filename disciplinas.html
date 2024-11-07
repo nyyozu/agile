@@ -92,7 +92,7 @@
     <button class="logout-button" onclick="logout()">Sair</button>
 
     <script>
-        // Matriz com as disciplinas por semestre
+
         const disciplinasPorSemestre = {
             GTI1NA: [
                 { nome: "Lógica Matemática", professor: "Frank Molitor", telefone: "(11) 91234-5678" },
@@ -113,6 +113,14 @@
             2: [
                 { nome: "Cálculo I", professor: "Ana Lima", telefone: "(31) 98765-4321" },
                 { nome: "Algoritmos", professor: "Julio Cesar", telefone: "(41) 91234-5678" }
+            ],
+            BioMed1NA: [
+                { nome: "Anatomia Humana", professor: "Shaco", telefone: "(11) 91234-5678" },
+                { nome: "Bioquímica", professor: "Jorgin da 17", telefone: "(21) 99999-8888" },
+                { nome: "Biologia Celular", professor: "Cleber", telefone: "(31) 98765-4321" },
+                { nome: "Histologia", professor: "MC Lan", telefone: "(41) 97654-3210" },
+                { nome: "Genética", professor: "MC Livinho", telefone: "(51) 96543-2109"},
+                { nome: "Introdução à Biomedicina", professor: "Aristóteles", telefone: "(61) 91831-3142"}
             ]
         };
 
@@ -161,7 +169,6 @@
                 logout();
             }
         }
-
 
         window.onload = () => {
             verificarAutenticacao();
