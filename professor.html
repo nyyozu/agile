@@ -117,7 +117,7 @@
             <div class="card-icon"><i class="fas fa-certificate"></i></div>
             <h2>Lançamento de Faltas</h2>
         </div>
-        <div class="card" onclick="location.href='disciplinas.html'">
+        <div class="card" onclick="location.href='lanccert.html'">
             <div class="card-icon"><i class="fas fa-book"></i></div>
             <h2>Lançamento de Certificado</h2>
         </div>
@@ -146,7 +146,8 @@
         function logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('alunoId');
-            localStorage.removeItem('tipo_usuario')
+            localStorage.removeItem('tipo_usuario');
+            localStorage.removeItem('semestre');
             window.location.href = 'login.html';
         }
         verificarAutenticacao();

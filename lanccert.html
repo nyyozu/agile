@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lançamento de Notas - Portal da Faculdade</title>
+    <title>Emissão de Certificado - CampusTracker</title>
     <style>
         body {
             background-image: url("fundo.gif");
@@ -97,33 +97,30 @@
     <button class="back-button" onclick="location.href='professor.html'">&#8592; Voltar</button>
     <button class="logout-button" onclick="logout()">Sair</button>
 
-    <h1>Lançamento de Notas</h1>
+    <h1>Emissão de Certificado</h1>
     <div class="container">
         <div class="form-card">
-            <form id="lancamento-form">
+            <form id="certificado-form">
                 <select id="semestre" required>
                     <option value="">Selecione o Semestre</option>
                 </select>
                 <select id="aluno" required>
                     <option value="">Selecione o Aluno</option>
                 </select>
-                <select id="materia" required>
-                    <option value="">Selecione a Matéria</option>
+                <select id="tipo_certificado" required>
+                    <option value="">Selecione o Tipo de Certificado</option>
+                    <option value="Conclusao">Certificado de Conclusão</option>
+                    <option value="Excelencia">Certificado de Excelência</option>
                 </select>
-                <input type="number" id="nota" placeholder="Valor da Nota" step="0.01" required>
-                <button type="submit" class="submit-button">Lançar Nota</button>
+                <input type="text" id="descricao" placeholder="Descrição do Certificado" required>
+                <input type="number" id="ano" placeholder="Ano de Emissão" required>
+                <input type="text" id="instituicao" placeholder="Instituição Emitente" required>
+                <button type="submit" class="submit-button">Emitir Certificado</button>
             </form>
         </div>
     </div>
 
     <script>
-        function logout() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('alunoId');
-            localStorage.removeItem('tipo_usuario');
-            window.location.href = 'login.html';
-        }
-
         document.addEventListener('DOMContentLoaded', carregarSemestres);
 
         function carregarSemestres() {
@@ -136,14 +133,15 @@
                 })
                 .then(semestres => {
                     const semestreSelect = document.getElementById('semestre');
-                    semestres.forEach(semestre => {
-                        if (semestre) {
+                    semestreSelect.innerHTML = '<option value="">Selecione o Semestre</option>';
+                    semestres
+                        .filter(semestre => semestre && semestre.trim() !== '') // Filtra valores nulos ou vazios
+                        .forEach(semestre => {
                             const option = document.createElement('option');
                             option.value = semestre;
                             option.textContent = semestre;
                             semestreSelect.appendChild(option);
-                        }
-                    });
+                        });
                 })
                 .catch(error => console.error('Erro ao carregar semestres:', error));
         }
@@ -151,7 +149,6 @@
         document.getElementById('semestre').addEventListener('change', function() {
             const semestre = this.value;
             carregarAlunos(semestre);
-            carregarMaterias(semestre);
         });
 
         function carregarAlunos(semestre) {
@@ -181,68 +178,27 @@
                 .catch(error => console.error('Erro ao carregar alunos:', error));
         }
 
-        function carregarMaterias(semestre) {
-            const materias = (semestre === 'BioMed1NA') ? 
-                [
-                    "Biologia Celular",
-                    "Genética",
-                    "Química Geral",
-                    "Anatomia Humana",
-                    "Introdução à Biomedicina",
-                    "Fisiologia"
-                ] : [
-                    "Lógica Matemática",
-                    "Lógica Computacional",
-                    "Database Modeling & SQL",
-                    "Gestão da Diversidade",
-                    "Sustentabilidade das Organizações",
-                    "Agile Methods"
-                ];
-
-            const materiaSelect = document.getElementById('materia');
-            materiaSelect.innerHTML = '<option value="">Selecione a Matéria</option>';
-
-            materias.forEach(materia => {
-                const option = document.createElement('option');
-                option.value = materia;
-                option.textContent = materia;
-                materiaSelect.appendChild(option);
-            });
-        }
-
-        document.getElementById('lancamento-form').addEventListener('submit', function(event) {
+        document.getElementById('certificado-form').addEventListener('submit', function(event) {
             event.preventDefault();
-            const semestre = document.getElementById('semestre').value;
-            const aluno_id = document.getElementById('aluno').value;
-            const materia = document.getElementById('materia').value;
-            const nota = document.getElementById('nota').value;
-
-            const data = {
-                aluno_id: aluno_id,
-                materia: materia,
-                nota: parseFloat(nota)
+            const dados = {
+                aluno_id: document.getElementById('aluno').value,
+                tipo_certificado: document.getElementById('tipo_certificado').value,
+                descricao: document.getElementById('descricao').value,
+                ano: document.getElementById('ano').value,
+                instituicao: document.getElementById('instituicao').value
             };
 
-            fetch('http://127.0.0.1:5000/lançar_nota', {
+            fetch('http://127.0.0.1:5000/lancarcertificado', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erro ao lançar nota');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(result => {
-                alert(result.message);
-                this.reset();
+                alert(result.message || 'Certificado emitido com sucesso!');
             })
             .catch(error => {
-                console.error('Erro:', error);
-                alert('Erro ao lançar nota');
+                console.error('Erro ao emitir certificado:', error);
             });
         });
 
@@ -259,7 +215,7 @@
                 logout();
             }
         }
-        
+
         function logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('alunoId');

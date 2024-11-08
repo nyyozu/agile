@@ -14,6 +14,7 @@ CREATE TABLE faltas (
     disciplina VARCHAR(100),
     dia DATE,
     FOREIGN KEY (aluno_id) REFERENCES usuarios(id)
+    qnt_falta int
 );
 
 CREATE TABLE notas (
