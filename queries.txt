@@ -1,3 +1,6 @@
+create database sistema_faculdade;
+
+use sistema_faculdade;
 
 CREATE TABLE usuarios (
 	id INT PRIMARY KEY AUTO_INCREMENT,
@@ -13,7 +16,7 @@ CREATE TABLE faltas (
     aluno_id INT,
     disciplina VARCHAR(100),
     dia DATE,
-    FOREIGN KEY (aluno_id) REFERENCES usuarios(id)
+    FOREIGN KEY (aluno_id) REFERENCES usuarios(id),
     qnt_falta int
 );
 
