@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notas - Portal da Faculdade</title>
     <style>
+        /* Estilos mantidos */
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f4f7f6;
@@ -101,21 +102,30 @@
             const alunoId = localStorage.getItem('alunoId');
             const semestre = localStorage.getItem('semestre');
 
-            if (!alunoId || !semestre) {
-                console.error('ID do aluno ou semestre não encontrados no localStorage.');
+            if (!alunoId) {
+                console.error('ID do aluno não encontrado no localStorage.');
+                return;
+            }
+
+            if (!semestre) {
+                document.getElementById('gradesContainer').innerHTML = '<h3>Nenhum semestre cadastrado no seu usuário.</h3>';
                 return;
             }
 
             try {
-                const responseNotas = await fetch(`http://localhost:5000/notas/${alunoId}`);
+                const responseNotas = await fetch(`http://127.0.0.1:5000/notas/${alunoId}`);
                 if (!responseNotas.ok) throw new Error('Falha ao buscar as notas.');
                 const notas = await responseNotas.json();
 
-                const responseMaterias = await fetch(`http://localhost:5000/getmaterias?semestre=${semestre}`);
+                const responseMaterias = await fetch(`http://127.0.0.1:5000/getmaterias?semestre=${semestre}`);
                 if (!responseMaterias.ok) throw new Error('Falha ao buscar as matérias do semestre.');
                 const materias = await responseMaterias.json();
 
-                exibirNotas(materias, notas);
+                if (semestre === 'CDC1NA') {
+                    exibirNotas(materias, notas);
+                } else if (semestre === 'BioMed1NA') {
+                    exibirNotasBioMed(materias, notas);
+                }
             } catch (error) {
                 console.error('Erro:', error);
                 alert('Erro ao carregar as notas. Veja o console para detalhes.');
@@ -128,7 +138,21 @@
 
             materias.forEach(materia => {
                 const notasMateria = notas.filter(n => n.disciplina === materia);
+                const somaNotas = notasMateria.reduce((total, item) => total + (parseFloat(item.nota) || 0), 0);
 
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `<h2>${materia}</h2><p>Nota Total: ${somaNotas.toFixed(1)}</p>`;
+                container.appendChild(card);
+            });
+        }
+
+        function exibirNotasBioMed(materias, notas) {
+            const container = document.getElementById('gradesContainer');
+            container.innerHTML = '';
+
+            materias.forEach(materia => {
+                const notasMateria = notas.filter(n => n.disciplina === materia);
                 const somaNotas = notasMateria.reduce((total, item) => total + (parseFloat(item.nota) || 0), 0);
 
                 const card = document.createElement('div');
@@ -161,8 +185,8 @@
         }
 
         window.onload = () => {
-            carregarNotas();
             verificarAutenticacao();
+            carregarNotas();
         };
     </script>
 </body>

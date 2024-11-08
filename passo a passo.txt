@@ -1,0 +1,9 @@
+instalar bibliotecas novas
+recriar o banco do 0
+adaptar as portas pra rodar no localhost
+
+criar usuário professor
+criar usuário aluno cdc
+criar usuário aluno biomed
+
+11992541576

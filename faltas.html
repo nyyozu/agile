@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acompanhamento de Faltas - Portal da Faculdade</title>
     <style>
+        /* Estilos mantidos */
         body {
             background-image: url("fundo.gif");
             font-family: Arial, sans-serif;
@@ -40,9 +41,8 @@
             transform: translateY(-5px);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
         }
-        .back-button {
+        .back-button, .logout-button {
             position: absolute;
-            top: 20px;
             padding: 10px 20px;
             font-size: 1em;
             border: none;
@@ -50,27 +50,19 @@
             cursor: pointer;
             transition: background-color 0.3s;
             color: white;
-            background-color: #3498db;
-        }
-        .back-button:hover, .logout-button:hover {
-            background-color: #2980b9;
         }
         .back-button {
+            background-color: #3498db;
+            top: 20px;
             left: 20px;
         }
         .logout-button {
-            position: absolute;
+            background-color: #e74c3c;
             top: 20px;
             right: 20px;
-            padding: 10px 20px;
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-size: 1em;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .back-button:hover {
+            background-color: #2980b9;
         }
         .logout-button:hover {
             background-color: #c9302c;
@@ -82,13 +74,10 @@
     </style>
 </head>
 <body>
-    <button class="back-button" onclick="location.href='sistema.html'">
-        &#8592;
-    </button>
+    <button class="back-button" onclick="location.href='sistema.html'">&#8592;</button>
 
     <h1 class="text1">Acompanhamento de Faltas</h1>
-    <div class="container" id="absenceContainer">
-    </div>
+    <div class="container" id="absenceContainer"></div>
 
     <button class="logout-button" onclick="logout()">Sair</button>
 
@@ -100,8 +89,7 @@
             if (!token) {
                 alert("Você precisa estar logado para acessar esta página.");
                 logout();
-            }
-            else if (tipo_usuario !== 'alunos') {
+            } else if (tipo_usuario !== 'alunos') {
                 alert('Acesso não permitido! Você não tem permissão para acessar esta página.');
                 logout();
             }
@@ -110,47 +98,68 @@
         async function carregarFaltas() {
             const alunoId = localStorage.getItem('alunoId');
             const semestre = localStorage.getItem('semestre');
-            if (!alunoId || !semestre) {
-                console.error('ID do aluno ou semestre não encontrados no localStorage.');
+
+            if (!alunoId) {
+                console.error('ID do aluno não encontrado no localStorage.');
+                return;
+            }
+
+            if (!semestre) {
+                document.getElementById('absenceContainer').innerHTML = '<h3>Nenhum semestre cadastrado no seu usuário.</h3>';
                 return;
             }
 
             try {
                 const responseMaterias = await fetch(`http://localhost:5000/getmaterias?semestre=${semestre}`);
-                if (!responseMaterias.ok) {
-                    throw new Error('Falha ao buscar as matérias. Status: ' + responseMaterias.status);
-                }
+                if (!responseMaterias.ok) throw new Error('Falha ao buscar as matérias.');
                 const materias = await responseMaterias.json();
 
                 const responseFaltas = await fetch(`http://localhost:5000/faltas/${alunoId}`);
-                if (!responseFaltas.ok) {
-                    throw new Error('Falha ao buscar as faltas. Status: ' + responseFaltas.status);
-                }
-
+                if (!responseFaltas.ok) throw new Error('Falha ao buscar as faltas.');
                 const faltas = await responseFaltas.json();
-                exibirFaltas(faltas, materias);
+
+                if (semestre === 'CDC1NA') {
+                    exibirFaltas(materias, faltas);  // Exibe faltas para CDC1NA
+                } else if (semestre === 'BioMed1NA') {
+                    exibirFaltasBioMed(materias, faltas);  // Exibe faltas para BioMed1NA
+                }
             } catch (error) {
                 console.error('Erro:', error);
                 alert('Erro ao carregar as faltas. Veja o console para detalhes.');
             }
         }
 
-        function exibirFaltas(faltas, materias) {
+        function exibirFaltas(materias, faltas) {
             const container = document.getElementById("absenceContainer");
             container.innerHTML = '';
 
             const faltasPorDisciplina = {};
-
-            faltas.forEach(falta => {
-                const disciplina = falta.disciplina;
-                const totalFaltas = falta.total_faltas;
-                faltasPorDisciplina[disciplina] = totalFaltas;
-            });
+            faltas.forEach(falta => faltasPorDisciplina[falta.disciplina] = falta.total_faltas || 0);
 
             materias.forEach(materia => {
                 const card = document.createElement('div');
                 card.className = 'absence-card';
+                const faltasMateria = faltasPorDisciplina[materia] || 0;
 
+                card.innerHTML = `
+                    <h2>${materia}</h2>
+                    <p>Total de Aulas: 30</p>
+                    <p>Faltas: <span>${faltasMateria}</span></p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function exibirFaltasBioMed(materias, faltas) {
+            const container = document.getElementById("absenceContainer");
+            container.innerHTML = '';
+
+            const faltasPorDisciplina = {};
+            faltas.forEach(falta => faltasPorDisciplina[falta.disciplina] = falta.total_faltas || 0);
+
+            materias.forEach(materia => {
+                const card = document.createElement('div');
+                card.className = 'absence-card';
                 const faltasMateria = faltasPorDisciplina[materia] || 0;
 
                 card.innerHTML = `
